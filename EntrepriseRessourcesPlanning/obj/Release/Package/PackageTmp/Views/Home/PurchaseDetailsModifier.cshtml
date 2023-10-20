@@ -1,0 +1,99 @@
+﻿@using EntrepriseRessourcesPlanning.Models
+@model List<ProductOrder>
+
+@{
+    ViewBag.Title = "Purchase Order Details";
+}
+
+<h2>Purchase Order Details</h2>
+<link href="@Url.Content("~/Content/Receipt.css")" rel="stylesheet" />
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet">
+
+@if (Model.Count == 0)
+{
+    <p>No products found for this purchase order.</p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Product Name</th>
+                <th>Description</th>
+                <th>Category</th>
+                <th>Unit Price HT</th>
+                <th>Quantity</th>
+                <th>Total Price HT</th>
+                <th>TVA</th>
+                <th>Total TTC</th>
+                <th></th>
+
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var productOrder in Model)
+            {
+            <tr>
+                <form action="@Url.Action("UpdatePurchaseProductOrder", "Home")" method="post">
+
+                <td>@productOrder.Name</td>
+                <td>@productOrder.Description</td>
+                <td class="unit-price-ht">@productOrder.UnitPriceHT</td>
+                <td>
+                    <input type="number" name="Quantity" class="quantity-input" value="@productOrder.Quantity" min="1" />
+
+                </td>
+                <td class="total-price-ht">@productOrder.TotalPriceHT</td>
+                <td class="tva">@productOrder.TVA</td>
+                <td class="total-ttc">@productOrder.TotalTTC</td>
+                <td>
+
+                    <input type="hidden" name="ProductOrderID" value="@productOrder.ID" />
+                    <button type="submit" class="details-button">Update</button>
+                    <a class="delete-button" href="@Url.Action("DeleteProductOrder", "Home", new { ProductOrderID = productOrder.ID })"><i class="fas fa-trash-alt"></i></a>
+
+
+                </td>
+                
+                
+                </form>
+
+            </tr>
+            }
+        </tbody>
+    </table>
+}
+
+<script>
+    $(document).ready(function () {
+        // Function to calculate and update the total price, TVA, and total TTC
+        function updateTotals(row) {
+            var quantity = parseInt($(row).find('.quantity-input').val());
+            var unitPriceHT = parseFloat($(row).find('.unit-price-ht').text().replace(',', '.')); // Replace comma with dot for correct parsing
+
+            // Calculate new values
+            var totalPriceHT = quantity * unitPriceHT;
+            var tva = totalPriceHT * 0.2;
+            var totalTTC = totalPriceHT + tva;
+
+            // Update the corresponding cells
+            $(row).find('.total-price-ht').text(totalPriceHT.toFixed(2));
+            $(row).find('.tva').text(tva.toFixed(2));
+            $(row).find('.total-ttc').text(totalTTC.toFixed(2));
+        }
+
+        // Attach event listener to quantity input fields
+        $('.quantity-input').on('input', function () {
+            var row = $(this).closest('tr');
+            updateTotals(row);
+        });
+
+        // Calculate and update totals for all rows initially
+
+    });
+</script>
+
+
+
+
+

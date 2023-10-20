@@ -1,0 +1,130 @@
+﻿@using EntrepriseRessourcesPlanning.Models
+@model ReceiptViewModel
+
+@using (Html.BeginForm("AddReceiptMethod", "Home", FormMethod.Post))
+{
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <link href="@Url.Content("~/Content/Receipt.css")" rel="stylesheet" />
+
+    <h2>Add Receipt</h2>
+
+    /*<div>
+        <label>Receipt ID:</label>
+        @Html.TextBoxFor(m => m.ReceiptID)
+        @Html.ValidationMessageFor(m => m.ReceiptID)
+    </div>*/
+
+    <div>
+        <label>Reception Date:</label>
+        @Html.TextBoxFor(m => m.Receipt.ReceptionDate, new { type = "date" })
+        @Html.ValidationMessageFor(m => m.Receipt.ReceptionDate)
+    </div>
+
+    <div>
+        <label>Provider:</label>
+        @Html.DropDownListFor(m => m.Receipt.ProviderID, new SelectList(Model.Providers, "ProviderID", "Name"), "-- Select Provider --", new { id = "Provider_ProviderID" })
+        @Html.ValidationMessageFor(m => m.Receipt.ProviderID)
+    </div>
+
+    <h3>Select Purchase Orders:</h3>
+    <table id="purchaseOrdersTable">
+        <thead>
+            <tr>
+                <th>Purchase Order ID</th>
+                <th>Total Amount</th>
+                <th>Details</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @for (int i = 0; i < Model.PurchaseOrders.Count; i++)
+            {
+                <tr data-orderNum="@Model.PurchaseOrders[i].OrderNum" data-provider="@Model.PurchaseOrders[i].ProviderID" data-total-amount="@Model.PurchaseOrders[i].TotalAmount">
+                    <td>@Model.PurchaseOrders[i].OrderNum</td>
+                    <td>@Model.PurchaseOrders[i].TotalAmount</td>
+                    <td>
+                        <div class="button-container">
+                            <a class="details-button" href="@Url.Action("PurchaseDetailsModifier", "Home", new { OrderNum = Model.PurchaseOrders[i].OrderNum })">Details</a>
+                        </div>
+                    </td>
+                    <td>
+                        <input type="checkbox" name="SelectedPurchaseOrderIDs" value="@Model.PurchaseOrders[i].OrderNum" class="purchase-order-checkbox" />
+                    </td>
+                </tr>
+            }
+
+        </tbody>
+    </table>
+
+
+    <div class="total-amount-container" id="totalAmountContainer" style=" text-align: right; margin-left: auto;">
+        <label>Total Amount(TD$):</label>
+        <input type="number" id="totalAmount" name="TotalAmount" size="5" readonly />
+    </div>
+
+    <input type="submit" value="Submit" class="submit-po" id="submitButton" />
+}
+<script>
+    $(document).ready(function () {
+
+        var allPurchaseOrderRows = $("#purchaseOrdersTable tbody tr");
+        allPurchaseOrderRows.hide();
+
+        var totalAmount = 0;
+
+        function calculateTotalAmount() {
+            totalAmount = 0;
+            allPurchaseOrderRows.each(function () {
+                if ($(this).find(".purchase-order-checkbox").is(":checked")) {
+                    totalAmount += parseFloat($(this).data("total-amount"));
+                }
+            });
+            $("#totalAmount ").val(totalAmount.toFixed(2));
+        }
+
+        $(".purchase-order-checkbox").change(function () {
+            calculateTotalAmount();
+        });
+
+        $("#Provider_ProviderID").change(function () {
+            var selectedProviderID = $(this).val();
+            console.log("Selected Provider ID: " + selectedProviderID);
+
+            allPurchaseOrderRows.hide();
+
+            if (selectedProviderID) {
+                allPurchaseOrderRows.each(function () {
+                    var providerID = $(this).data("provider");
+                    if (providerID == selectedProviderID) {
+                        $(this).show();
+                    }
+                });
+            }
+
+            calculateTotalAmount();
+        });
+
+
+        // Trigger the change event to initially show all purchase orders
+        $("#Provider_ProviderID").trigger("change");
+    });
+</script>
+<script>
+    const checkboxes = document.querySelectorAll('.purchase-order-checkbox');
+    const submitButton = document.getElementById('submitButton');
+    submitButton.style.display = 'none';
+
+    checkboxes.forEach(checkbox => {
+        checkbox.addEventListener('change', updateSubmitButtonVisibility);
+    });
+
+    function updateSubmitButtonVisibility() {
+        const checkedCheckboxes = document.querySelectorAll('.purchase-order-checkbox:checked');
+        if (checkedCheckboxes.length > 0) {
+            submitButton.style.display = 'block';
+        } else {
+            submitButton.style.display = 'none';
+        }
+    }
+</script>

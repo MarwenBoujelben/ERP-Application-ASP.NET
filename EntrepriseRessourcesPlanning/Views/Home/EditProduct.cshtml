@@ -1,0 +1,53 @@
+﻿@using EntrepriseRessourcesPlanning.Models
+@model Product
+
+
+
+<h2>Edit Product</h2>
+
+@using (Html.BeginForm("UpdateProduct", "Home", FormMethod.Post, new { @class = "signin-form", enctype = "multipart/form-data" }))
+{
+    @Html.HiddenFor(m => m.ProductID) <!-- Hidden field to store the ProductID -->
+    @Html.HiddenFor(m => m.Company) <!-- Hidden field to store the ProductID -->
+
+    <div>
+        <label for="Name">Product Name:</label>
+        @Html.TextBoxFor(m => m.Name, new { @class = "form-input" })
+    </div>
+
+    <div>
+        <label for="Description">Description:</label>
+        @Html.TextAreaFor(m => m.Description, new { @class = "form-input" })
+    </div>
+    <div>
+        <label for="Category">Category:</label>
+        @Html.DropDownListFor(m => m.Category, new SelectList(new[]
+        {
+            "PC",
+            "Gaming PC",
+            "Playstation",
+            "TVs",
+            "Phones",
+            "Accessories"
+        }), new { @class = "form-input" })
+    </div>
+    <div>
+        <label for="Stock">Stock:</label>
+        @Html.TextBoxFor(m => m.Stock, new { @class = "form-input" })
+    </div>
+    <div>
+        <label for="UnitPrice">Unit Price:</label>
+        @Html.TextBoxFor(m => m.UnitPrice, new { @class = "form-input" })
+    </div>
+    <div>
+        <label for="DiscountPrice">Discount Price:</label>
+        @Html.TextBoxFor(m => m.DiscountPrice, new { @class = "form-input" })
+
+    </div>
+        <div>
+            <label for="Img">Add Photos:</label>
+            <input type="file" name="photoFiles" accept="image/*" multiple>
+        </div>
+    <input type="submit" value="Save Changes" class="submit-btn" />
+}
+<link href="@Url.Content("~/Content/EditProduct.css")" rel="stylesheet" />

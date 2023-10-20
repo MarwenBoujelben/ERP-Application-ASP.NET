@@ -1,0 +1,52 @@
+﻿@using EntrepriseRessourcesPlanning.Models
+@model List<PurchaseOrder>
+
+@{
+    ViewBag.Title = "Receipt Details";
+}
+
+<h2>Receipt Details</h2>
+<link href="@Url.Content("~/Content/Receipt.css")" rel="stylesheet" />
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet">
+
+@if (Model.Count == 0)
+{
+    <p>No purchase Orders found in this Receipt</p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Purchase ID</th>
+                <th>Total Amount</th>
+                <th>Provider ID</th>             
+                <th></th>
+
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var purchaseOrder in Model)
+            {
+                <tr>
+
+                    <td>@purchaseOrder.OrderNum</td>
+                    <td>@purchaseOrder.TotalAmount</td>
+                    <td>@purchaseOrder.ProviderID</td>
+                    <td>
+                        <a class="details-button" href="@Url.Action("PurchaseDetails", "Home", new { OrderNum = purchaseOrder.OrderNum })">Details</a>
+
+                        <a class="delete-button" href="@Url.Action("DeletePurchaseOrderFromReceipt", "Home", new { OrderNum = purchaseOrder.OrderNum})"><i class="fas fa-trash-alt"></i></a>
+
+
+                    </td>
+
+
+
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+

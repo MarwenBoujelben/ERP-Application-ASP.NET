@@ -1,0 +1,95 @@
+﻿@using EntrepriseRessourcesPlanning.Models
+@model AllInvoicesViewModel
+
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet">
+
+<link href="@Url.Content("~/Content/Receipt.css")" rel="stylesheet" />
+
+<h2>Invoices</h2>
+
+
+<div>
+    <label>Provider:</label>
+    @Html.DropDownList("ProviderID", new SelectList(Model.Providers, "ProviderID", "Name"), "-- Select Provider --", new { id = "Provider_ProviderID" })
+</div>
+
+<h3>Invoices:</h3>
+<table id="purchaseOrdersTable">
+    <thead>
+        <tr>
+            <th>Invoice ID
+                <input type="number" id="invoiceIdSearch" class="search-input" style="width: 80px; margin-left: 5px; vertical-align: middle;" placeholder="Search">
+            </th>
+            <th>Total Amount</th>
+            <th>Payment Method</th>
+            <th>Provider</th>
+            <th>Details</th>
+        </tr>
+    </thead>
+    <tbody>
+        @for (int i = 0; i < Model.Invoices.Count; i++)
+        {
+            <tr data-invoiceID="@Model.Invoices[i].InvoiceID" data-provider="@Model.Invoices[i].ProviderID" data-total-amount="@Model.Invoices[i].TotalAmount">
+                <td>@Model.Invoices[i].InvoiceID</td>
+                <td>@Model.Invoices[i].TotalAmount</td>
+                <td>@Model.Invoices[i].PaymentMethod</td>
+                <td>@Model.Invoices[i].ProviderID</td>
+
+                <td>
+
+                    <a class="details-button" href="@Url.Action("InvoiceDetailsModifier", "Home", new { InvoiceID = Model.Invoices[i].InvoiceID })">Details</a>
+                    <a class="delete-button" href="@Url.Action("DeleteInvoice", "Home", new { InvoiceID = Model.Invoices[i].InvoiceID })"><i class="fas fa-trash-alt"></i></a>
+                </td>
+
+            </tr>
+        }
+
+    </tbody>
+</table>
+<p id="noMatchingProduct" style="display: none;">No matching Invoice found.</p>
+
+
+<script>
+    $(document).ready(function () {
+        var allPurchaseOrderRows = $("#purchaseOrdersTable tbody tr");
+
+        function filterPurchaseOrders() {
+            var selectedProviderID = $("#Provider_ProviderID").val();
+            var searchId = $("#invoiceIdSearch").val().trim();
+            var matchingRowCount = 0;
+
+            allPurchaseOrderRows.each(function () {
+                var providerID = $(this).data("provider");
+                var orderId = parseInt($(this).data("invoiceid"));
+                var row = $(this);
+
+                if ((selectedProviderID === "" || providerID == selectedProviderID) &&
+                    (searchId === "" || orderId == searchId)) {
+                    row.show();
+                    matchingRowCount++;
+                } else {
+                    row.hide();
+                }
+            });
+
+            if (matchingRowCount === 0) {
+                $("#noMatchingProduct").show();
+            } else {
+                $("#noMatchingProduct").hide();
+            }
+        }
+
+        $("#Provider_ProviderID").change(function () {
+            filterPurchaseOrders();
+        });
+
+        $("#invoiceIdSearch").on("input", function () {
+            filterPurchaseOrders();
+        });
+
+        // Trigger the change event to initially show all purchase orders
+        $("#Provider_ProviderID").trigger("change");
+    });
+</script>

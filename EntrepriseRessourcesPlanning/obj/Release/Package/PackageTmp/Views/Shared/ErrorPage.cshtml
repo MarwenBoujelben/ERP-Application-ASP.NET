@@ -1,0 +1,48 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="error-container">
+    <h1>Access Denied</h1>
+    <p>You are not Authorized to use this functionality</p>
+
+    <div class="error-details">
+        <h2>Error Details:</h2>
+        <p>Error Code: 403 error FORBIDDEN</p>
+    </div>
+
+    <div class="error-actions">
+        <h2>Accesses:</h2>
+        <ul>
+            @foreach (var access in (List<String>) @ViewData["Accesses"])
+            {
+                <li>@access</li>
+            }
+        </ul>
+    </div>
+</div>
+
+<style>
+    .error-container {
+        text-align: center;
+        margin: 50px auto;
+    }
+
+        .error-container h1 {
+            font-size: 36px;
+            margin-bottom: 20px;
+        }
+
+    .error-details {
+        margin-bottom: 30px;
+    }
+
+    .error-actions ul {
+        list-style-type: none;
+        padding: 0;
+    }
+
+        .error-actions ul li {
+            margin-bottom: 10px;
+        }
+</style>

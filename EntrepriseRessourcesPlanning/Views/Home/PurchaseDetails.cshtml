@@ -1,0 +1,43 @@
+﻿@using EntrepriseRessourcesPlanning.Models
+@model List<ProductOrder>
+
+@{
+    ViewBag.Title = "Purchase Order Details";
+}
+
+<h2>Purchase Order Details</h2>
+
+@if (Model.Count == 0)
+{
+    <p>No products found for this purchase order.</p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Product Name</th>
+                <th>Description</th>
+                <th>Unit Price HT</th>
+                <th>Quantity</th>
+                <th>Total Price HT</th>
+                <th>TVA</th>
+                <th>Total TTC</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var productOrder in Model)
+            {
+                <tr>
+                    <td>@productOrder.Name</td>
+                    <td>@productOrder.Description</td>
+                    <td>@productOrder.UnitPriceHT</td>
+                    <td>@productOrder.Quantity</td>
+                    <td>@productOrder.TotalPriceHT</td>
+                    <td>@productOrder.TVA</td>
+                    <td>@productOrder.TotalTTC</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}

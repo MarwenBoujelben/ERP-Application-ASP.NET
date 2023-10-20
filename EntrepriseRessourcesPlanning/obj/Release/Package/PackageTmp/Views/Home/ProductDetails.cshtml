@@ -1,0 +1,177 @@
+﻿@using EntrepriseRessourcesPlanning.Models;
+@model Product
+
+<style>
+    /* Your existing CSS code... */
+
+    /* New CSS styles for the product details layout */
+    .product-details-container {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 30px;
+        background-color: #f0f0f0;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        border-radius: 10px;
+        text-align: center;
+    }
+
+    .product-image {
+        width: 50%;
+        max-height: 400px;
+        object-fit: cover;
+        border-radius: 10px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s ease-in-out;
+    }
+
+        .product-image:hover {
+            transform: scale(1.05);
+        }
+
+    .product-info {
+        text-align: center;
+        margin-top: 20px;
+    }
+
+        .product-info h3 {
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+
+        .product-info p {
+            font-size: 16px;
+            margin-bottom: 5px;
+        }
+
+    .action-buttons {
+        display: flex;
+        justify-content: center;
+        margin-top: 20px;
+    }
+
+    .action-buttons a {
+        display: inline-block;
+        padding: 10px 20px;
+        margin: 0 10px;
+        color: #fff;
+        text-decoration: none;
+        border-radius: 5px;
+        transition: background-color 0.3s ease;
+    }
+
+    .edit-button {
+        background-color: #4CAF50;
+    }
+
+    .delete-button {
+        background-color: red;
+    }
+
+    /* Your existing CSS code... */
+
+    .slide-controls {
+        margin: 20px 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+        .slide-controls button {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            margin: 0 10px;
+        }
+
+            .slide-controls button:focus {
+                outline: none;
+            }
+
+            .slide-controls button:hover {
+                color: #007bff; /* Change color on hover if needed */
+            }
+</style>
+
+<h1>Product Details</h1>
+
+<div class="product-details-container">
+    @if (Model.NumImages > 0)
+    {
+        <div class="slideshow">
+            @for (int imgIndex = 0; imgIndex < Model.NumImages; imgIndex++)
+            {
+                <div class="slide">
+                    <img src="@Url.Action("DisplayImg", "Home", new { productId = Model.ProductID, imgIndex = imgIndex })" alt="Product Image" class="product-image">
+                </div>
+            }
+        </div>
+        <div class="slide-controls">
+            <button class="prev-btn" onclick="prevSlide(this)"><i class="fa fa-chevron-left"></i></button>
+            <button class="next-btn" onclick="nextSlide(this)"><i class="fa fa-chevron-right"></i></button>
+        </div>
+    }
+    else
+    {
+        <span class="no-photo">No photo available</span>
+
+    }
+    
+    <div class="product-info">
+        <h3>@Model.Name</h3>
+        <p><strong>Description:</strong> @Model.Description</p>
+        <p><strong>Stock:</strong> @Model.Stock</p>
+        <p><strong>Unit Price:</strong> @Model.UnitPrice.ToString("C")</p>
+        <p><strong>Category:</strong> @Model.Category</p>
+    </div>
+
+    <div class="action-buttons">
+        <a href="@Url.Action("EditProduct", "Home", new { productId = Model.ProductID })" class="action-button edit-button">Edit</a>
+        <a href="@Url.Action("DeleteProduct", "Home", new { productId = Model.ProductID })" class="action-button delete-button">Delete</a>
+    </div>
+</div>
+
+
+
+
+                <script>
+                    function showSlide(slides, index) {
+                        slides.forEach((slide, i) => {
+                            if (i === index) {
+                                slide.style.display = "block";
+                            } else {
+                                slide.style.display = "none";
+                            }
+                        });
+                    }
+
+                    function prevSlide(button) {
+                        const carousel = button.parentElement.previousElementSibling;
+                        const slides = carousel.querySelectorAll(".slide");
+                        const activeSlide = carousel.querySelector(".slide:not([style*='display: none'])");
+
+                        let index = Array.from(slides).indexOf(activeSlide);
+                        index = (index - 1 + slides.length) % slides.length;
+
+                        showSlide(slides, index);
+                    }
+
+                    function nextSlide(button) {
+                        const carousel = button.parentElement.previousElementSibling;
+                        const slides = carousel.querySelectorAll(".slide");
+                        const activeSlide = carousel.querySelector(".slide:not([style*='display: none'])");
+
+                        let index = Array.from(slides).indexOf(activeSlide);
+                        index = (index + 1) % slides.length;
+
+                        showSlide(slides, index);
+                    }
+
+                    // Show the first slide initially
+                    const slideshows = document.querySelectorAll(".slideshow");
+                    slideshows.forEach((slideshow) => {
+                        const slides = slideshow.querySelectorAll(".slide");
+                        showSlide(slides, 0);
+                    });
+                </script>
+

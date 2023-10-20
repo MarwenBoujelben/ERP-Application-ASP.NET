@@ -1,0 +1,59 @@
+﻿@using EntrepriseRessourcesPlanning.Models;
+@model List<AccessClass>
+<style>
+    .field-validation-error {
+        color: red;
+        font-size: smaller;
+    }
+</style>
+<style>
+   
+
+    .permissions-container {
+        margin: 0px;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        background-color: #f9f9f9;
+    }
+
+       
+</style>
+@using (Html.BeginForm("AddUserMethod", "Home", FormMethod.Post, new { @class = "signin-form", enctype = "multipart/form-data" }))
+{
+    <h1>Add User</h1>
+    <div>
+        <label for="UserCIN">CIN:</label>
+        <input type="text" id="UserCIN" name="UserCIN" class="form-input" maxlength="8"/>
+        @Html.ValidationMessage("UserCIN")
+
+    </div>
+    <div>
+        <label for="Name">Name:</label>
+        <input type="text" id="Name" name="Name" class="form-input" onkeydown="return /[a-zA-Z\s]/i.test(event.key)"/>
+    </div>
+    <div>
+        <label for="Username">Username:</label>
+        <input type="text" id="Username" name="Username" class="form-input" onkeypress="return event.charCode !== 32;"/>
+    </div>
+    <div>
+        <label for="Password">Password:</label>
+        <input type="password" id="Password" name="Password" class="form-input" />
+    </div>
+    <div>
+        <label for="confirmPassword">Confirm Password:</label>
+        <input type="password" id="confirmPassword" name="confirmPassword" class="form-input" />
+    </div>
+
+    <div class="permissions-container">
+        <label for="Accesses">Access Permissions:</label>
+        <br />
+        @foreach (var access in Model)
+        {
+            <input type="checkbox" name="SelectedAccesses" value="@access.Acc_Role" id="access-@access.Acc_Role"/> @access.Acc_Role<br />
+        }
+
+    </div>
+    <input type="submit" value="Add User" class="submit-btn" />
+}
+<link href="@Url.Content("~/Content/EditProduct.css")" rel="stylesheet" />

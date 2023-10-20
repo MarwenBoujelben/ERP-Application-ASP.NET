@@ -1,0 +1,93 @@
+﻿@using EntrepriseRessourcesPlanning.Models
+@model List<Product>
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.5/css/jquery.dataTables.min.css" />
+
+<!DOCTYPE html>
+<html>
+<head>
+    <!-- Add necessary CSS and scripts here -->
+</head>
+<body>
+    <!-- Your HTML table code -->
+    <table id="example" class="display" style="width:100%">
+        <!-- Table headers -->
+        <thead>
+            <tr>
+                <th>ProductID</th>
+                <th>Name</th>
+                <th>Description</th>
+                <th>Stock</th>
+                <th>Unit Price</th>
+                <th>Discount Price</th>
+                <th>Category</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Your table data (product details) -->
+            @foreach (var product in Model)
+            {
+
+            <tr>
+                <td>@product.ProductID</td>
+                <td>@product.Name</td>
+                <td>@product.Description</td>
+                <td>@product.Stock</td>
+                <td>@product.UnitPrice</td>
+                <td>@product.DiscountPrice</td>
+                <td>@product.Category</td>
+                <td><a href="@Url.Action("ProductDetails", "Home", new { productId = product.ProductID })">Details</a></td>
+
+
+            </tr>
+
+            }
+        </tbody>
+    </table>
+
+    <script>
+        // JavaScript variable to store product details
+        var products = [];
+
+        // Loop through the table rows and populate the products array
+        var tableRows = document.querySelectorAll("#example tbody tr ");
+        tableRows.forEach(function (row) {
+            var product = [
+                row.cells[0].innerText,
+                row.cells[1].innerText,
+                row.cells[2].innerText,
+                row.cells[3].innerText,
+                row.cells[4].innerText,
+                row.cells[5].innerText,
+                row.cells[6].innerText,
+                row.cells[7].innerText,
+            ];
+            products.push(product);
+        });
+
+        // Now, the 'products' array contains all the product details
+        console.log(products);
+    </script>
+</body>
+</html>
+
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.5/css/jquery.dataTables.min.css" />
+<script src="https://code.jquery.com/jquery-3.7.0.js"></script>
+<script src="https://cdn.datatables.net/1.13.5/js/jquery.dataTables.min.js"></script>
+
+
+<script>
+    new DataTable('#example', {
+        columns: [
+            { title: 'ProductID' },
+            { title: 'Name' },
+            { title: 'Description' },
+            { title: 'Stock' },
+            { title: 'Unit Price' },
+            { title: 'Discount Price' },
+            { title: 'Category' },
+            { title: 'Details', orderable: false },
+        ],
+        data: products
+    });
+</script>

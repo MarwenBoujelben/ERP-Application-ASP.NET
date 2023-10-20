@@ -1,0 +1,51 @@
+﻿@using EntrepriseRessourcesPlanning.Models;
+@model Product
+
+@using (Html.BeginForm("AddProductMethod", "Home", FormMethod.Post, new { @class = "signin-form", enctype = "multipart/form-data" }))
+{
+    <div>
+        <label for="ProductID">ProductID</label>
+        <input type="text" id="ProductID" name="ProductID" class="form-input" />
+    </div>
+    <div>
+        <label for="Name">Name:</label>
+        <input type="text" id="Name" name="Name" class="form-input" />
+    </div>
+    <div>
+        <label for="Description">Description:</label>
+        <input type="text" id="Description" name="Description" class="form-input" />
+    </div>
+    <div>
+        <label for="Stock">Stock:</label>
+        <input type="number" id="Stock" name="Stock" class="form-input" min="1"/>
+    </div>
+    <div>
+        <label for="UnitPrice">Unit Price:</label>
+        <input type="number" id="UnitPrice" name="UnitPrice" step="0.01" class="form-input" min="0"/>
+    </div>
+    <div>
+        <label for="Category">Category:</label>
+        <select name="selectedCategory">
+            <option value="">-- Select Category --</option>
+            <option value="PC">PC</option>
+            <option value="Gaming PC">Gaming PC</option>
+            <option value="Playstation">Playstation</option>
+            <option value="TVs">TVs</option>
+            <option value="Phones">Phones</option>
+            <option value="Accessories">Accessories</option>
+
+        </select>
+    </div>
+    <div>
+        <label for="Img">Photo:</label>
+
+        <input type="file" name="photoFiles" accept="image/* " multiple>
+    </div>
+
+    <div>
+        <input type="submit" value="Add Product" class="submit-btn" />
+    </div>
+
+}
+<!-- Add this line to reference the CSS file -->
+<link href="@Url.Content("~/Content/EditProduct.css")" rel="stylesheet" />

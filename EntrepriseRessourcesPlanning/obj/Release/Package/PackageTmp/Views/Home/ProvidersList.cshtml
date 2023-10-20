@@ -1,0 +1,71 @@
+﻿@using EntrepriseRessourcesPlanning.Models;
+@model IEnumerable<Provider>
+
+<style>
+    .provider-list-container {
+        /* Add your desired styles for the provider list container */
+        /* Example styles: */
+        margin: 20px;
+        padding: 20px;
+        background-color: #f8f8f8;
+        box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+    }
+
+    .provider-item {
+        /* Add your desired styles for each provider item */
+        /* Example styles: */
+        padding: 10px;
+        border-bottom: 1px solid #ccc;
+    }
+
+    .provider-name {
+        /* Add your desired styles for the provider name */
+        /* Example styles: */
+        font-weight: bold;
+        margin-bottom: 5px;
+    }
+
+    .provider-details {
+        /* Add your desired styles for the provider details */
+        /* Example styles: */
+        margin-bottom: 10px;
+    }
+    .button-container {
+        /* Add your desired styles for the button container */
+        /* Example styles: */
+        text-align: right;
+        margin-top: 10px;
+    }
+
+    .modify-button,
+    .delete-button {
+        /* Add your desired styles for the buttons */
+        /* Example styles: */
+        padding: 5px 10px;
+        background-color: #337ab7;
+        color: #fff;
+        border: none;
+        border-radius: 4px;
+        margin-right: 5px;
+        cursor: pointer;
+    }
+</style>
+
+<h1>Provider List</h1>
+
+<div class="provider-list-container">
+    @foreach (var provider in Model)
+    {
+    <div class="provider-item">
+        <div class="provider-name">@provider.Name</div>
+        <div class="provider-details">
+            <strong>Address:</strong> @provider.Address<br />
+            <strong>Phone Number:</strong> @provider.PhoneNumber<br />
+            <strong>Contact Email:</strong> @provider.ContactEmail
+        </div>
+        <div class="button-container">
+            <a class="delete-button" href="@Url.Action("DeleteProvider", "Home", new { providerId = provider.ProviderID })">Delete</a>
+        </div>
+    </div>
+    }
+</div>

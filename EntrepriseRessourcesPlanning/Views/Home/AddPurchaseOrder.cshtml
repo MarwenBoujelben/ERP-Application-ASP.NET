@@ -1,0 +1,175 @@
+﻿@{
+    var dbContext = new ContextDB(); // Instantiate your DbContext
+    var categories = dbContext.Categories.ToList();
+}
+@using EntrepriseRessourcesPlanning.Models
+@model PurchaseOrderViewModel
+
+@using (Html.BeginForm("AddPurchaseOrderMethod", "Home", FormMethod.Post))
+{
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet">
+    <link href="@Url.Content("~/Content/Purchase.css")" rel="stylesheet" />
+
+    <h2>Add Purchase Order</h2>
+
+    <div class="form-group">
+        <label>Order Date:</label>
+        @Html.TextBoxFor(m => m.PurchaseOrder.OrderDate, new { type = "date" })
+        @Html.ValidationMessageFor(m => m.PurchaseOrder.OrderDate)
+    </div>
+
+    <div class="form-group">
+        <label>Provider:</label>
+        @Html.DropDownListFor(m => m.PurchaseOrder.ProviderID, new SelectList(Model.Providers, "ProviderID", "Name"), "-- Select Provider --")
+        @Html.ValidationMessageFor(m => m.PurchaseOrder.ProviderID)
+    </div>
+
+    /*<div>
+        <label>Payment Method:</label>
+        @Html.DropDownListFor(m => m.PurchaseOrder.PaymentMethod, new SelectList(new[]
+        {
+            new SelectListItem { Value = "Bank transfer", Text = "Bank transfer" },
+            new SelectListItem { Value = "Cash", Text = "Cash" },
+            new SelectListItem { Value = "Check", Text = "Check" }
+        }, "Value", "Text"), "-- Select Payment Method --")
+        @Html.ValidationMessageFor(m => m.PurchaseOrder.PaymentMethod)
+    </div>
+    */
+    <h3>Product Orders</h3>
+    <div class="table-responsive">
+        <table id="productOrdersTable">
+            <thead>
+                <tr>
+                    <th style="padding-right: 10px;">ProductID</th>
+                    <th style="padding-right: 10px;">Name</th>
+                    <th style="padding-right: 10px;">Description</th>
+                    <th style="padding-right: 10px;">Category</th>
+                    <th style="padding-right: 10px;">Unit Price HT</th>
+                    <th style="padding-right: 10px;">Quantity</th>
+                    <th style="padding-right: 10px;">Total Price HT</th>
+                    <th style="padding-right: 10px;">TVA</th>
+                    <th style="padding-right: 10px;">Total TTC</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+    </div>
+    <div class="total-amount-container">
+        <label>Total Amount (TD$):</label>
+        <input type="number" id="totalAmount" name="TotalAmount" size="5" readonly />
+    </div>
+    <button type="button" id="btnAdd">Add Product</button>
+    <input type="submit" value="Submit" class="submit-po" id="submitButton" style="display: none;" />
+}
+
+
+
+<script>
+    $(document).ready(function () {
+
+
+
+        var productOrdersCount = 0;
+
+        $("#btnAdd").click(function () {
+
+            var newRow = $("<tr>");
+            var cols = "";
+            cols += '<td><input type="text" name="ProductOrders[' + productOrdersCount + '].ProductID" /></td>';
+            cols += '<td><input type="text" name="ProductOrders[' + productOrdersCount + '].Name" /></td>';
+            cols += '<td><input type="text" name="ProductOrders[' + productOrdersCount + '].Description" /></td>';
+            cols += '<td><select name="ProductOrders[' + productOrdersCount + '].Category">';
+            @foreach (var category in categories)
+    {
+        <text>cols += '<option value="@category.CategoryName">@category.CategoryName</option>';</text>
+    }
+
+    cols += '</select></td>';
+            cols += '<td><input type="number" min="1" name="ProductOrders[' + productOrdersCount + '].UnitPriceHT" /></td>';
+            cols += '<td><input type="number" min="1" name="ProductOrders[' + productOrdersCount + '].Quantity" /></td>';
+            cols += '<td><input type="text" name="ProductOrders[' + productOrdersCount + '].TotalPriceHT" readonly /></td>';
+            cols += '<td><input type="text" name="ProductOrders[' + productOrdersCount + '].TVA" readonly /></td>';
+            cols += '<td><input type="text" name="ProductOrders[' + productOrdersCount + '].TotalTTC" readonly /></td>';
+            cols += '<td><button type="button" class="delete-row"><i class="fas fa-trash-alt"></i></button></td>';
+            newRow.append(cols);
+            $("#productOrdersTable").append(newRow);
+            productOrdersCount++;
+        });
+
+        $(document).on('input', 'input[name$="].ProductID"], input[name$="].Name"], input[name$="].Description"], input[name^="ProductOrders["][name$="].UnitPriceHT"], input[name^="ProductOrders["][name$="].Quantity"]', function () {
+            var row = $(this).closest('tr');
+            var productId = row.find('input[name$="].ProductID"]').val();
+            var name = row.find('input[name$="].Name"]').val();
+            var description = row.find('input[name$="].Description"]').val();
+            var unitPrice = parseFloat(row.find('input[name$="].UnitPriceHT"]').val());
+            console.log(unitPrice);
+            var quantity = parseInt(row.find('input[name$="].Quantity"]').val());
+            console.log(quantity);
+
+            if (productId !== '' && name !== '' && description !== '' && !isNaN(unitPrice) && !isNaN(quantity)) {
+                $('#submitButton').show();
+            }
+            else {
+                $('#submitButton').hide();
+            }
+        }
+        )
+
+        $(document).on('input', 'input[name^="ProductOrders["][name$="].UnitPriceHT"], input[name^="ProductOrders["][name$="].Quantity"]', function () {
+
+            var row = $(this).closest('tr');
+
+
+            var unitPrice = parseFloat(row.find('input[name$="].UnitPriceHT"]').val());
+            var quantity = parseInt(row.find('input[name$="].Quantity"]').val());
+
+            var totalPriceHT = unitPrice * quantity;
+            var tva = totalPriceHT * 0.2;
+            var totalTTC = totalPriceHT + tva;
+
+            row.find('input[name$="].TotalPriceHT"]').val(totalPriceHT.toFixed(2));
+            row.find('input[name$="].TVA"]').val(tva.toFixed(2));
+            row.find('input[name$="].TotalTTC"]').val(totalTTC.toFixed(2));
+
+            calculateTotalAmount();
+
+
+        });
+        // Calculate the total amount
+        function calculateTotalAmount() {
+            var totalAmount = 0;
+
+            $('input[name$="].TotalTTC"]').each(function () {
+                var value = parseFloat($(this).val());
+                if (!isNaN(value)) {
+                    totalAmount += value;
+                }
+            });
+
+            if (!isNaN(totalAmount) && totalAmount !== 0) {
+                $('.total-amount-container').show(); // Show the Total Amount field
+                $('#totalAmount').val(totalAmount.toFixed(2));
+            } else {
+                $('.total-amount-container').hide(); // Hide the Total Amount field
+            }
+        }
+
+        // Calculate the total amount initially
+        calculateTotalAmount();
+
+        /* Recalculate the total amount whenever a TotalTTC value changes
+        $(document).on('input', 'input[name$="].TotalTTC"]', function () {
+            calculateTotalAmount();
+        });*/
+        $(document).on('click', '.delete-row', function () {
+            $(this).closest('tr').remove();
+            $('#submitButton').hide();
+            calculateTotalAmount();
+        });
+    });
+</script>
+
+
+

@@ -1,0 +1,195 @@
+﻿@using EntrepriseRessourcesPlanning.Models;
+@model List<Product>
+
+<link href="@Url.Content("~/Content/AllProdsData.css")" rel="stylesheet" />
+<script src="~/Scripts/AllProds.js"></script>
+
+
+<h1>All Products</h1>
+<div class="combinedDivs">
+<div class="search-container">
+    <input type="text" id="searchInput" placeholder="Search by product name..." oninput="searchProducts()">
+</div>
+<div class="sort-container">
+    <label for="sortOption">Sort By:</label>
+    <select id="sortOption" onchange="sortProducts()">
+        <option value="default">Default</option>
+        <option value="priceLowToHigh">Price: Low to High</option>
+        <option value="priceHighToLow">Price: High to Low</option>
+    </select>
+</div>
+<div class="filter-container">
+    <label for="categoryFilter">Filter by Category:</label>
+    <select id="categoryFilter" onchange="filterProducts()">
+        <option value="all">All</option>
+        <option value="PC">PC</option>
+        <option value="Gaming PC">Gaming PC</option>
+        <option value="Playstation">Playstation</option>
+        <option value="Phones">Phones</option>
+        <option value="Accessories">Accessories</option>
+    </select>
+</div>
+
+<div class="products-container">
+
+    @foreach (var product in Model)
+    {
+        <div class="product-container">
+            <div onclick="location.href='@Url.Action("ProductDetails", "Home", new { productId = product.ProductID })'">
+                <div class="product-info">
+                    <h3>@product.Name</h3>
+                    <p> @product.Description</p>
+                    <p class="product-category">@product.Category</p>
+                </div>
+            </div>
+            @if (product.NumImages > 0)
+            {
+                <div class="product-images-container">
+                    <div class="details">
+                        <div class="slideshow">
+                            @for (int imgIndex = 0; imgIndex < product.NumImages; imgIndex++)
+                            {
+                                <div class="slide" onclick="location.href='@Url.Action("ProductDetails", "Home", new { productId = product.ProductID })'">
+                                    <img src="@Url.Action("DisplayImg", "Home", new { productId = product.ProductID, imgIndex = imgIndex })" alt="Product Image" class="product-image">
+                                </div>
+                            }
+                        </div>
+                    </div>
+                    <div class="slide-controls">
+                        <button class="prev-btn" onclick="prevSlide(this)"><i class="fa fa-chevron-left"></i></button>
+                        <button class="next-btn" onclick="nextSlide(this)"><i class="fa fa-chevron-right"></i></button>
+                    </div>
+                </div>
+
+            }
+            else
+            {
+                <span>No photo available</span>
+            }
+            <p>
+                <strong>Unit Price:</strong>
+                @if (product.DiscountPrice > 0)
+                {
+                    <span class="old-price">@product.UnitPrice.ToString("C")</span>
+                    <span class="new-price">@product.DiscountPrice.ToString("C")</span>
+                }
+                else
+                {
+                    <span class="new-price">@product.UnitPrice.ToString("C")</span>
+
+                }
+                <br />
+                @if (product.Stock > 0)
+                {
+                    <span style="color:green">In Stock</span>
+
+                }
+                else
+                {
+                    <span style="color:red">Out of Stock</span>
+
+                }
+
+            </p>
+
+        </div>
+    }
+</div>
+
+<button class="top-page-button" onclick="goToTop()">
+    <i class="fa fa-arrow-up"></i> <!-- Use your preferred icon for the button -->
+</button>
+
+</div>
+
+
+
+
+<script>
+    function searchProducts() {
+        var input, filter, products, productContainer, productName, i, txtValue;
+        input = document.getElementById('searchInput');
+        filter = input.value.toUpperCase();
+        products = document.getElementsByClassName('product-container');
+
+        for (i = 0; i < products.length; i++) {
+            productContainer = products[i];
+            productName = productContainer.getElementsByTagName('h3')[0];
+            txtValue = productName.textContent || productName.innerText;
+
+            if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                // Apply yellow highlight to matched characters
+                var regex = new RegExp(filter, 'ig');
+                var highlightedText = txtValue.replace(regex, function (matched) {
+                    return '<span class="highlight">' + matched + '</span>';
+                });
+                productName.innerHTML = highlightedText;
+
+                productContainer.style.display = '';
+            } else {
+                productName.innerHTML = txtValue; // Restore original text
+                productContainer.style.display = 'none';
+            }
+        }
+    }
+</script>
+<!-- Your existing HTML code... -->
+<script>
+    function showSlide(slides, index) {
+        slides.forEach((slide, i) => {
+            if (i === index) {
+                slide.style.display = "block";
+            } else {
+                slide.style.display = "none";
+            }
+        });
+    }
+
+    function prevSlide(button) {
+        const carousel = button.parentElement.previousElementSibling;
+        const slides = carousel.querySelectorAll(".slide");
+        const activeSlide = carousel.querySelector(".slide:not([style*='display: none'])");
+
+        let index = Array.from(slides).indexOf(activeSlide);
+        index = (index - 1 + slides.length) % slides.length;
+
+        showSlide(slides, index);
+    }
+
+    function nextSlide(button) {
+        const carousel = button.parentElement.previousElementSibling;
+        const slides = carousel.querySelectorAll(".slide");
+        const activeSlide = carousel.querySelector(".slide:not([style*='display: none'])");
+
+        let index = Array.from(slides).indexOf(activeSlide);
+        index = (index + 1) % slides.length;
+
+        showSlide(slides, index);
+    }
+
+    // Show the first slide initially
+    const slideshows = document.querySelectorAll(".slideshow");
+    slideshows.forEach((slideshow) => {
+        const slides = slideshow.querySelectorAll(".slide");
+        showSlide(slides, 0);
+    });
+</script>
+
+<script>
+    // Add fade-in animation to product containers when the page loads
+    document.addEventListener("DOMContentLoaded", function () {
+        const productContainers = document.querySelectorAll(".product-container");
+        productContainers.forEach(function (container, index) {
+            // Calculate the delay for the staggered effect (in milliseconds)
+            const delay = index * 100; // Change the delay time as needed
+
+            // Add the 'fade-in' class with a delay to each product container
+            setTimeout(function () {
+                container.classList.add("fade-in");
+            }, delay);
+        });
+    });
+
+    // Your other JavaScript functions here
+</script>
+

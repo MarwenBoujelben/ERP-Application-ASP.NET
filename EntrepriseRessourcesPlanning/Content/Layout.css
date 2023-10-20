@@ -1,0 +1,263 @@
+﻿/* --------Products---------- */
+.product-operations-dropdown {
+    display: none;
+    position: absolute;
+    background-color: #1b1b1b;
+    border: 1px solid #ccc;
+    border-top: none;
+    min-width: 160px;
+    z-index: 1;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    list-style: none; /* Remove default list style */
+    padding: 0;
+    margin: 0;
+    border-radius: 2px;
+}
+
+    .product-operations-dropdown li {
+        margin-left: 5px;
+        padding: 8px 16px;
+        text-decoration: none;
+        display: block;
+        color: #fff; /* Set the text color to white */
+        background-color: transparent; /* Remove the background color */
+        padding-left: 0; /* Adjust the left padding to 0 */
+    }
+
+        .product-operations-dropdown li a {
+            text-decoration: none; /* Remove the underline for anchor elements */
+            color: #fff; /* Set the text color to white */
+        }
+
+        .product-operations-dropdown li:hover {
+            background-color: black;
+        }
+
+        .product-operations-dropdown li::before {
+            content: "\f0da"; /* Unicode for fa-caret-right */
+            font-family: "Font Awesome 5 Free";
+            font-weight: 900;
+            margin-right: 8px;
+            color: white;
+        }
+
+
+/*------------Providers------------*/
+
+.provider-operations-dropdown {
+    display: none;
+    position: absolute;
+    background-color: #1b1b1b;
+    border: 1px solid #ccc;
+    border-top: none;
+    min-width: 160px;
+    z-index: 1;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    list-style: none; /* Remove default list style */
+    padding: 0;
+    margin: 0;
+    border-radius:2px;
+
+}
+
+    .provider-operations-dropdown li {
+        margin-left: 5px;
+        padding: 8px 16px;
+        text-decoration: none;
+        display: block;
+        color: #fff; /* Set the text color to white */
+        background-color: transparent; /* Remove the background color */
+        padding-left: 0; /* Adjust the left padding to 0 */
+    }
+
+        .provider-operations-dropdown li a {
+            text-decoration: none; /* Remove the underline for anchor elements */
+            color: #fff; /* Set the text color to white */
+        }
+
+        .provider-operations-dropdown li:hover {
+            background-color: black;
+        }
+
+        .provider-operations-dropdown li::before {
+            content: "\f0da"; /* Unicode for fa-caret-right */
+            font-family: "Font Awesome 5 Free";
+            font-weight: 900;
+            margin-right: 8px;
+            color: white;
+        }
+
+/*------------Users------------*/
+
+.user-operations-dropdown {
+    display: none;
+    position: absolute;
+    background-color: #1b1b1b;
+    border: 1px solid #ccc;
+    border-top: none;
+    min-width: 160px;
+    z-index: 1;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    list-style: none; /* Remove default list style */
+    padding: 0;
+    margin: 0;
+    border-radius: 2px;
+}
+
+    .user-operations-dropdown li {
+        margin-left: 5px;
+        padding: 8px 16px;
+        text-decoration: none;
+        display: block;
+        color: #fff; /* Set the text color to white */
+        background-color: transparent; /* Remove the background color */
+        padding-left: 0; /* Adjust the left padding to 0 */
+    }
+
+        .user-operations-dropdown li a {
+            text-decoration: none; /* Remove the underline for anchor elements */
+            color: #fff; /* Set the text color to white */
+        }
+
+        .user-operations-dropdown li:hover {
+            background-color: black;
+        }
+
+        .user-operations-dropdown li::before {
+            content: "\f0da"; /* Unicode for fa-caret-right */
+            font-family: "Font Awesome 5 Free";
+            font-weight: 900;
+            margin-right: 8px;
+            color: white;
+        }
+
+/*------------Purchase Orders------------*/
+
+.purchaseOrders-operations-dropdown {
+    display: none;
+    position: absolute;
+    background-color: #1b1b1b;
+    border: 1px solid #ccc;
+    border-top: none;
+    min-width: 160px;
+    z-index: 1;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    list-style: none; /* Remove default list style */
+    padding: 0;
+    margin: 0;
+    border-radius: 2px;
+}
+
+    .purchaseOrders-operations-dropdown li {
+        margin-left: 5px;
+        padding: 8px 16px;
+        text-decoration: none;
+        display: block;
+        color: #fff; /* Set the text color to white */
+        background-color: transparent; /* Remove the background color */
+        padding-left: 0; /* Adjust the left padding to 0 */
+    }
+
+        .purchaseOrders-operations-dropdown li a {
+            text-decoration: none; /* Remove the underline for anchor elements */
+            color: #fff; /* Set the text color to white */
+        }
+
+        .purchaseOrders-operations-dropdown li:hover {
+            background-color: black;
+        }
+
+        .purchaseOrders-operations-dropdown li::before {
+            content: "\f0da"; /* Unicode for fa-caret-right */
+            font-family: "Font Awesome 5 Free";
+            font-weight: 900;
+            margin-right: 8px;
+            color: white;
+        }
+
+/*------------Receipts------------*/
+
+.receipts-operations-dropdown {
+    display: none;
+    position: absolute;
+    background-color: #1b1b1b;
+    border: 1px solid #ccc;
+    border-top: none;
+    min-width: 160px;
+    z-index: 1;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    list-style: none; /* Remove default list style */
+    padding: 0;
+    margin: 0;
+    border-radius: 2px;
+}
+
+    .receipts-operations-dropdown li {
+        margin-left:5px;
+        padding: 8px 16px;
+        text-decoration: none;
+        display: block;
+        color: #fff; /* Set the text color to white */
+        background-color: transparent; /* Remove the background color */
+        padding-left: 0; /* Adjust the left padding to 0 */
+    }
+
+        .receipts-operations-dropdown li a {
+            text-decoration: none; /* Remove the underline for anchor elements */
+            color: #fff; /* Set the text color to white */
+        }
+
+        .receipts-operations-dropdown li:hover {
+            background-color: black;
+        }
+
+        .receipts-operations-dropdown li::before {
+            content: "\f0da"; /* Unicode for fa-caret-right */
+            font-family: "Font Awesome 5 Free";
+            font-weight: 900;
+            margin-right: 8px;
+            color: white;
+        }
+/*------------Invoices------------*/
+
+.invoices-operations-dropdown {
+    display: none;
+    position: absolute;
+    background-color: #1b1b1b;
+    border: 1px solid #ccc;
+    border-top: none;
+    min-width: 160px;
+    z-index: 1;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    list-style: none; /* Remove default list style */
+    padding: 0;
+    margin: 0;
+    border-radius: 2px;
+}
+
+    .invoices-operations-dropdown li {
+        margin-left: 5px;
+        padding: 8px 16px;
+        text-decoration: none;
+        display: block;
+        color: #fff; /* Set the text color to white */
+        background-color: transparent; /* Remove the background color */
+        padding-left: 0; /* Adjust the left padding to 0 */
+    }
+
+        .invoices-operations-dropdown li a {
+            text-decoration: none; /* Remove the underline for anchor elements */
+            color: #fff; /* Set the text color to white */
+        }
+
+        .invoices-operations-dropdown li:hover {
+            background-color: black;
+        }
+
+        .invoices-operations-dropdown li::before {
+            content: "\f0da"; /* Unicode for fa-caret-right */
+            font-family: "Font Awesome 5 Free";
+            font-weight: 900;
+            margin-right: 8px;
+            color: white;
+        }

@@ -1,0 +1,962 @@
+﻿@using EntrepriseRessourcesPlanning.Models
+@model List<Product>
+@{
+    var dbContext = new ContextDB(); // Instantiate your DbContext
+    var categories = dbContext.Categories.ToList();
+}
+<link href="@Url.Content("~/Content/AllProdsdata.css")" rel="stylesheet" />
+<script src="~/Scripts/AllProducts.js"></script>
+<style>
+    body {
+        background-color: white;
+    }
+</style>
+
+<br />
+<!-----<div id="notificationsPopup" class="notifications-popup">
+    <div class="content">
+    </div>
+</div>
+-->
+<!-----
+<div id="notificationsIcon" class="notifications-icon">
+    <span class="icon">&#x1F514;</span>
+    <span class="counter">0</span>
+</div>
+    --->
+<style>
+
+
+    .notifications-icon {
+        position: fixed;
+        top: 90px;
+        right: 50px;
+        display: inline-block;
+        cursor: pointer;
+        float: right;
+    }
+
+    .icon {
+        font-size: 24px;
+    }
+
+    .counter {
+        position: absolute;
+        top: -10px;
+        right: -10px;
+        background-color: red;
+        color: white;
+        font-size: 14px;
+        padding: 4px 8px;
+        border-radius: 50%;
+    }
+</style>
+<style>
+
+    .product-details-container-popup {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 30px;
+        background-color: #f0f0f0;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        border-radius: 10px;
+    }
+
+    .align-image-slides {
+        text-align: center
+    }
+
+    .product-image-popup {
+        width: 50%;
+        max-height: 400px;
+        object-fit: cover;
+        border-radius: 10px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s ease-in-out;
+    }
+
+        .product-image-popup:hover {
+            transform: scale(1.05);
+        }
+
+    .product-info {
+        text-align: center;
+        margin-top: 20px;
+    }
+
+        .product-info h3 {
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+
+        .product-info p {
+            font-size: 16px;
+            margin-bottom: 5px;
+        }
+
+    .action-buttons {
+        display: flex;
+        justify-content: center;
+        margin-top: 20px;
+    }
+
+        .action-buttons a {
+            display: inline-block;
+            padding: 10px 20px;
+            margin: 0 10px;
+            color: #fff;
+            text-decoration: none;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+        }
+
+    .edit-button {
+        background-color: #4CAF50;
+    }
+
+    .delete-button {
+        background-color: red;
+    }
+
+    .top-page-button {
+        background-color: #3E8DA8;
+    }
+</style>
+
+
+
+
+<style>
+    .prodDetails {
+        cursor: pointer;
+    }
+
+    .slideshow {
+        position: relative;
+        height: 100%;
+        transition: transform 0.5s ease-in-out;
+        white-space: nowrap;
+        overflow: hidden;
+    }
+
+    div.dataTables_wrapper div.dataTables_filter {
+        display: none;
+    }
+
+    .view-btn {
+        margin: 0 10px;
+    }
+
+
+    .view-details-btn {
+        background-color: #3E8DA8;
+    }
+
+    .table-view {
+        display: none;
+    }
+</style>
+
+<!-- Modal to show product details -->
+<div class="modal fade" id="productDetailsModal" tabindex="-1" role="dialog" aria-labelledby="productDetailsModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title" id="productDetailsModalLabel">Product Details</h3>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" id="productDetailsModalBody">
+                <!-- Product details will be displayed here -->
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="table-responsive"  >
+
+    <table id="productsTable" class="display">
+        <thead>
+
+            <tr>
+                <th>Product ID</th>
+                <th>Name</th>
+                <th>Description</th>
+                <th>Stock</th>
+                <th>Unit Price</th>
+                <th>Discount Price</th>
+                <th>Category</th>
+                <th data-searchable="false"></th>
+            </tr>
+            <tr>
+                <th><input type="text" class="form-control" placeholder="Search ID" /></th>
+                <th><input type="text" class="form-control" placeholder="Search Name" /></th>
+                <th><input type="text" class="form-control" placeholder="Search Description" /></th>
+                <th><input type="text" class="form-control" placeholder="Search Stock" /></th>
+                <th><input type="text" class="form-control" placeholder="Search Unit Price" /></th>
+                <th><input type="text" class="form-control" placeholder="Search Discount Price" /></th>
+                <th><input type="text" class="form-control" placeholder="Search Category" /></th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var product in Model)
+            {
+                <tr>
+                    <td>@product.ProductID</td>
+                    <td>@product.Name</td>
+                    <td>@product.Description</td>
+                    <td>@product.Stock</td>
+                    <td>@product.UnitPrice</td>
+                    <td>@product.DiscountPrice</td>
+                    <td>@product.Category</td>
+                    <td>
+                        <button type="button" class="btn btn-primary view-details-btn" data-product-id="@product.ProductID">View Details</button>
+
+                    </td>
+                </tr>
+            }
+
+        </tbody>
+    </table>
+</div>
+
+<div class="combinedDivs">
+    <div class="search-filters-container">
+
+
+        <!----<input type="text" id="searchInput" placeholder="Search by product name..." oninput="searchProducts()">-->
+
+        <div class="filter-container">
+            <label for="categoryFilter">Filter by Category:</label>
+
+            <div class="filter-categories">
+                <div class="filter-category" id="all" data-value="all" onclick="filterCategory(this)">All</div>
+                @foreach (var category in categories)
+                {
+                    <div class="filter-category" data-value="@category.CategoryName" onclick="filterCategory(this)">@category.CategoryName</div>
+                }
+            </div>
+        </div>
+        <div class="sort-container">
+            <label for="sortOption">Sort By:</label>
+            <select id="sortOption" onchange="sortProducts()">
+                <option value="default">Default</option>
+                <option value="priceLowToHigh">Price: Low to High</option>
+                <option value="priceHighToLow">Price: High to Low</option>
+            </select>
+        </div>
+
+    </div>
+    <div class="products-container">
+
+        @foreach (var product in Model)
+        {
+            <div class="product-container">
+                <div class="prodDetails" data-product-id="@product.ProductID">
+                    <div class="product-info">
+                        <h3>@product.Name</h3>
+                        <p> @product.Description</p>
+                        <p class="product-category">@product.Category</p>
+                    </div>
+                </div>
+                @if (product.NumImages > 0)
+                {
+                    <div class="product-images-container">
+                        <div class="details">
+                            <div class="slideshow">
+                                @for (int imgIndex = 0; imgIndex < product.NumImages; imgIndex++)
+                                {
+                                    <div class="slide">
+                                        <img src="@Url.Action("DisplayImg", "Home", new { productId = product.ProductID, imgIndex = imgIndex })" alt="Product Image" class="product-image">
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                        <div class="slide-controls">
+                            <button class="prev-btn" onclick="prevSlide(this)"><i class="fa fa-chevron-left"></i></button>
+                            <button class="next-btn" onclick="nextSlide(this)"><i class="fa fa-chevron-right"></i></button>
+                        </div>
+                    </div>
+
+                }
+                else
+                {
+                    <span>No photo available</span>
+                }
+                <p>
+                    <strong>Unit Price:</strong>
+                    @if (product.DiscountPrice > 0)
+                    {
+                        <span class="old-price">@product.UnitPrice.ToString("C")</span>
+                        <span class="new-price">@product.DiscountPrice.ToString("C")</span>
+                    }
+                    else
+                    {
+                        <span class="new-price">@product.UnitPrice.ToString("C")</span>
+
+                    }
+                    <br />
+                    @if (product.Stock > 0)
+                    {
+                        <span style="color:green">In Stock</span>
+
+                    }
+                    else
+                    {
+                        <span style="color:red">Out of Stock</span>
+
+                    }
+
+                </p>
+
+            </div>
+        }
+    </div>
+    <div class="pagination-container">
+        <button id="prevPageBtn" onclick="prevPage()">Previous</button>
+        <span id="currentPage">1</span>
+        <button id="nextPageBtn" onclick="nextPage()">Next</button>
+    </div>
+    <button class="top-page-button" onclick="goToTop()">
+        <i class="fa fa-arrow-up"></i>
+    </button>
+
+</div>
+
+<!-------------------------------------------Javascript for switching Views-->
+<script>
+        $(document).ready(function () {
+            var allCategoryElements = document.querySelectorAll('.filter-category');
+            allCategoryElements.forEach(function (element) {
+                element.style.backgroundColor = 'white';
+            });
+            var allDiv = document.getElementById("all");
+            allDiv.style.backgroundColor = '#3498db';
+
+        $(".combinedDivs").hide();
+        $(".table-responsive").show();
+        var dataTable = $('#productsTable').DataTable({
+            "paging": true,
+            "info": true,
+            "lengthMenu": [10, 25, 50]
+        });
+
+        $('#productsTable thead tr:eq(1) th').each(function () {
+            var columnIndex = $(this).index();
+            $('input', this).on('keyup change', function () {
+                dataTable.column(columnIndex).search(this.value).draw();
+            });
+        });
+
+        var isTableView = true;
+
+        $("#changeViewBtn").on("click", function () {
+            if (isTableView) {
+                $(".combinedDivs").show();
+                $(".table-responsive").hide();
+                $("#changeViewBtn").html("Data view");
+            } else {
+                $(".combinedDivs").hide();
+                $(".table-responsive").show();
+                $("#changeViewBtn").html("User Friendly");
+            }
+            isTableView = !isTableView;
+            $(this).toggleClass("active", isTableView);
+        });
+
+        $('#productsTable').on('click', '.view-details-btn', function () {
+
+            var productId = $(this).data('product-id');
+            $.ajax({
+                url: '@Url.Action("GetProductDetails", "Home")',
+                type: 'GET',
+                data: { productId: productId },
+                dataType: 'json',
+                success: function (data) {
+                    console.log(data);
+                    $('#productDetailsModalBody').html(renderProductDetails(data));
+                    $('#productDetailsModal').modal('show');
+                },
+                error: function (xhr, status, error) {
+                    console.log('Error: ' + error);
+                }
+            });
+        });
+
+        $('.products-container').on('click', '.prodDetails', function () {
+            var productId = $(this).data('product-id');
+            $.ajax({
+                url: '@Url.Action("GetProductDetails", "Home")',
+                type: 'GET',
+                data: { productId: productId },
+                dataType: 'json',
+                success: function (data) {
+                    console.log(data);
+                    $('#productDetailsModalBody').html(renderProductDetails(data));
+                    $('#productDetailsModal').modal('show');
+                },
+                error: function (xhr, status, error) {
+                    console.log('Error: ' + error);
+                }
+            });
+        });
+
+
+function renderProductDetails(product) {
+    var html = '<div class="product-details-container-popup">';
+    html += '<div class="align-image-slides">';
+    if (product.NumImages > 0) {
+        html += '<div class="slideshow">';
+        for (var imgIndex = 0; imgIndex < product.NumImages; imgIndex++) {
+            var imageUrl = getProductImageUrl(product.ProductID, imgIndex);
+            html += '<div class="slide">';
+            html += '<img src="' + imageUrl + '" alt="Product Image" class="product-image-popup">';
+            html += '</div>';
+        }
+        html += '</div>';
+        html += '<div class="slide-controls">';
+        html += '<button class="prev-btn" onclick="prevSlide(this)"><i class="fa fa-chevron-left"></i></button>';
+        html += '<button class="next-btn" onclick="nextSlide(this)"><i class="fa fa-chevron-right"></i></button>';
+        html += '</div>';
+        html += '</div>';
+
+    } else {
+        html += '<span class="no-photo">No photo available</span>';
+
+    }
+
+    html += '<div class="product-info">';
+    html += '<h3>' + product.Name + '</h3>';
+    html += '<p><strong>Description:</strong> ' + product.Description + '</p>';
+    html += '<p><strong>Stock:</strong> ' + product.Stock + '</p>';
+    html += '<p><strong>Unit Price:</strong> ' + product.UnitPrice + '</p>';
+    html += '<p><strong>Category:</strong> ' + product.Category + '</p>';
+    html += '</div>';
+
+    html += '<div class="action-buttons">';
+    html += '<a href="/Home/EditProduct?productId=' + product.ProductID + '" class="action-button edit-button">Edit</a>';
+    html += '<a href="/Home/DeleteProduct?productId=' + product.ProductID + '" class="action-button delete-button">Delete</a>';
+    html += '</div>';
+
+    html += '</div>';
+
+    return html;
+}
+
+        function getProductImageUrl(productId, imgIndex) {
+            var imageUrl = '@Url.Action("DisplayImg", "Home", new { productId = "PRODUCT_ID", imgIndex = "IMG_INDEX" })';
+            imageUrl = imageUrl.replace("PRODUCT_ID", productId).replace("IMG_INDEX", imgIndex); // You can change the imgIndex as needed
+            return imageUrl;
+        }
+
+    });
+</script>
+
+<!------------------------------------------------------------Javascript for the Div view--------------------------------------------------------------->
+<script>
+    function showSlide(slides, index) {
+        slides.forEach((slide, i) => {
+            if (i === index) {
+                slide.style.display = "block";
+            } else {
+                slide.style.display = "none";
+            }
+        });
+    }
+
+    function prevSlide(button) {
+        const carousel = button.parentElement.previousElementSibling;
+        const slides = carousel.querySelectorAll(".slide");
+        const activeSlide = carousel.querySelector(".slide:not([style*='display: none'])");
+
+        let index = Array.from(slides).indexOf(activeSlide);
+        index = (index - 1 + slides.length) % slides.length;
+
+        showSlide(slides, index);
+    }
+
+    function nextSlide(button) {
+        const carousel = button.parentElement.previousElementSibling;
+        const slides = carousel.querySelectorAll(".slide");
+        const activeSlide = carousel.querySelector(".slide:not([style*='display: none'])");
+
+        let index = Array.from(slides).indexOf(activeSlide);
+        index = (index + 1) % slides.length;
+
+        showSlide(slides, index);
+    }
+
+    const slideshows = document.querySelectorAll(".slideshow");
+    slideshows.forEach((slideshow) => {
+        const slides = slideshow.querySelectorAll(".slide");
+        showSlide(slides, 0);
+    });
+</script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const productContainers = document.querySelectorAll(".product-container");
+        productContainers.forEach(function (container, index) {
+            const delay = index * 100;
+            setTimeout(function () {
+                container.classList.add("fade-in");
+            }, delay);
+        });
+
+        const tableResponsive = document.querySelectorAll(".table-responsive");
+        tableResponsive.forEach(function (container, index) {
+            const delay = index * 100;
+            setTimeout(function () {
+                container.classList.add("fade-in");
+            }, delay);
+        });
+    });
+</script>
+<!--------------------------------Script fro filtering by category--------------------->
+<script>
+    var totalProducts = 0;
+    var allProducts = document.querySelectorAll('.product-container');
+    var filteredProducts = Array.from(allProducts); // Convert NodeList to Array
+    var currentPage = 1;
+    var productsPerPage = 3;
+    function filterCategory(categoryElement) {
+        var selectedCategory = categoryElement.getAttribute("data-value");
+        console.log("Gaming PC");
+        console.log(selectedCategory);
+        var allCategoryElements = document.querySelectorAll('.filter-category');
+        allCategoryElements.forEach(function (element) {
+            element.style.backgroundColor = 'white';
+        });
+
+        categoryElement.style.backgroundColor = '#3498db';
+
+        filterProducts(selectedCategory);
+    }
+
+    function filterProducts(selectedCategory) {
+        var ProdCategory = [];
+
+        allProducts.forEach(function (product) {
+            var productCategory = product.querySelector('.product-category').textContent;
+
+            if (selectedCategory === "all" || productCategory === selectedCategory) {
+                product.style.display = 'block';
+                ProdCategory.push(product);
+            } else {
+                product.style.display = 'none';
+            }
+        });
+
+        filteredProducts = ProdCategory;
+
+        currentPage = 1;
+        showPage(currentPage, filteredProducts);
+    }
+
+
+    $(document).ready(function () {
+        totalProducts = filteredProducts.length;
+
+        showPage(currentPage, filteredProducts);
+    });
+
+    function showPage(pageNumber, products) {
+        var startIndex = (pageNumber - 1) * productsPerPage;
+        var endIndex = startIndex + productsPerPage - 1;
+
+        $("#currentPage").text(pageNumber);
+        updatePaginationButtons(pageNumber);
+
+        $(".product-container").css("display", "none");
+
+        for (var i = startIndex; i <= endIndex && i < products.length; i++) {
+            $(products[i]).css("display", "block");
+        }
+    }
+
+    function updatePaginationButtons(pageNumber) {
+        var endIndex = (pageNumber * productsPerPage) - 1;
+        $("#prevPageBtn").prop("disabled", pageNumber === 1);
+        console.log(filteredProducts.length);
+        console.log(endIndex);
+        $("#nextPageBtn").prop("disabled", filteredProducts.length <= productsPerPage);
+    }
+
+    function prevPage() {
+        if (currentPage > 1) {
+            currentPage--;
+            showPage(currentPage, filteredProducts);
+        }
+    }
+
+    function nextPage() {
+        var maxPages = Math.ceil(filteredProducts.length / productsPerPage);
+        console.log(maxPages);
+        if (currentPage < maxPages) {
+            currentPage++;
+            showPage(currentPage, filteredProducts);
+        }
+        $("#nextPageBtn").prop("disabled", maxPages == currentPage);
+
+
+    }
+</script>
+
+<!----------<script>
+    const notificationsIcon = document.getElementById('notificationsIcon');
+    const notificationsPopup = document.getElementById('notificationsPopup'); // Replace with the actual ID of your popup element
+
+    function updateNotificationsCounter(count) {
+        const counterElement = notificationsIcon.querySelector('.counter');
+        counterElement.innerText = count.toString();
+        counterElement.style.display = count > 0 ? 'block' : 'block';
+    }
+
+    function fetchNotifications() {
+        // Fetch notifications from the server using AJAX
+        fetch('/Notifications/CountNotifications', { method: 'GET' })
+            .then(response => response.json())
+            .then(data => {
+                // Update the notifications counter
+                updateNotificationsCounter(data);
+
+
+            })
+            .catch(error => {
+                console.error('Error fetching notifications:', error);
+            });
+    }
+
+    notificationsIcon.addEventListener('click', () => {
+        console.log("hello");
+        // Fetch notifications from the server using AJAX
+        fetch('/Notifications/Check', { method: 'GET' })
+            .then(response => response.json())
+            .then(data => {
+                // Populate the popup with notifications
+                const popupContent = notificationsPopup.querySelector('.content');
+                popupContent.innerHTML = ''; // Clear previous content
+
+                data.forEach(notification => {
+                    const notificationElement = document.createElement('div');
+                    notificationElement.innerText = notification;
+                    popupContent.appendChild(notificationElement);
+                });
+
+                notificationsPopup.style.display = 'block';
+            })
+            .catch(error => {
+                console.error('Error fetching notifications:', error);
+            });
+
+
+
+    setInterval(fetchNotifications, 5000);
+
+</script>
+    ---------------->
+<!------Notification-----------
+
+<script>
+    const notificationsIcon = document.getElementById('notificationsIcon');
+
+    function updateNotificationsCounter(count) {
+        const counterElement = notificationsIcon.querySelector('.counter');
+        counterElement.innerText = count.toString();
+    }
+
+    function fetchNotifications() {
+        // Fetch notifications from the server using AJAX
+        fetch('/Notifications/CountNotifications', { method: 'GET' })
+            .then(response => response.json())
+            .then(data => {
+                // Update the notifications counter
+                updateNotificationsCounter(data);
+            })
+            .catch(error => {
+                console.error('Error fetching notifications:', error);
+            });
+    }
+    setInterval(fetchNotifications, 3000);
+
+    function checkProductsStock() {
+        $.get('/Notifications/CheckStock')
+            .done(function (data) {
+                console.log('Products checked successfully.');
+            })
+            .fail(function (xhr, textStatus, error) {
+                console.error('Error checking products stock:', error);
+            });
+    }
+
+    // Call the function every 3 seconds (3000 milliseconds)
+    setInterval(checkProductsStock, 3000);
+</script>
+
+<div id="notification-container" class="notification-container">
+</div>
+
+<div id="popup" class="popup">
+    <button id="popup-close">X</button>
+    <div id="popup-content" class="popup-content"></div>
+</div>
+<style>
+    .popup {
+        position: fixed;
+        top: 80px;
+        right: 80px;
+        width: 500px;
+        padding: 10px;
+        background-color: white;
+        border: 1px solid #ccc;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        opacity: 0;
+        transform: translateY(-20px); /* Initial translation to create a smooth entrance effect */
+        transition: opacity 0.3s, transform 0.3s;
+        z-index: 1000;
+    }
+        .popup #popup-close {
+            position: absolute;
+            top: 0px; /* Adjust to match your design */
+            right: 0px; /* Adjust to move the button to the right */
+            background: border-box;
+            border: none;
+            cursor: pointer;
+            font-size: 18px;
+            color: #999;
+            transition: color 0.3s;
+        }
+
+            .popup #popup-close:hover {
+                color: red; /* Change to your desired hover color */
+            }
+
+        .popup.active {
+            opacity: 1;
+            transform: translateY(0); /* Reset the translation for smooth entrance effect */
+        }
+
+        .popup .popup-content {
+            border-top: 1px solid #ccc;
+            padding-top: 10px;
+        }
+
+
+    .notification {
+        padding: 10px;
+        border-bottom: 1px solid #ccc;
+        cursor: pointer;
+        transition: background-color 0.3s;
+    }
+
+        .notification:hover {
+            background-color: #f5f5f5;
+        }
+
+        .notification a.details-button {
+            display: inline-block;
+            margin-top: 5px;
+            padding: 5px 10px;
+            background-color: #007bff;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            margin-left:20px;
+        }
+    .notification .delete-button:hover i {
+        color: red;
+    }
+
+        .notification .delete-button {
+            float: right;
+            border: none;
+            background-color: transparent;
+            cursor: pointer;
+            color: #777;
+            font-size: 14px;
+        }
+
+</style>
+<script>
+    $(document).ready(function () {
+        var popup = $('#popup');
+        var popupContent = $('#popup-content');
+        popup.removeClass("active");
+        setTimeout(function () {
+            popup.hide();
+        }, 300);
+        $(".notifications-icon").click(function () {
+            console.log("hello");
+            $.get('/Notifications/GetNotifications', function (notifications) {
+                popupContent.empty(); // Clear previous popup content
+
+                notifications.forEach(function (notification) {
+                    console.log(notification);
+                    //$('#notification-container').append(renderNotification(notification));
+                    if (notification.NotificationAction == "Add Purchase Order") {
+                        popupContent.append(renderNotificationPurchaseOrder(notification));
+                    }
+                    else if (notification.NotificationAction == "Add Receipt") {
+                        popupContent.append(renderNotificationReceipt(notification));
+
+                    }
+                    else if (notification.NotificationAction == "Add Invoice") {
+                        popupContent.append(renderNotificationInvoice(notification));
+
+                    }
+                    else if (notification.NotificationAction == "Add Product") {
+                        popupContent.append(renderNotificationProduct(notification));
+
+                    }
+                    else if (notification.NotificationAction == "Update Product") {
+                        popupContent.append(renderNotificationProduct(notification));
+
+                    }
+                    else if (notification.NotificationAction == "Out of Stock") {
+                        popupContent.append(renderNotificationProductOutStock(notification));
+
+                    }
+
+                });
+
+                if (popup.hasClass("active")) {
+                    popup.removeClass("active");
+                    setTimeout(function () {
+                        popup.hide();
+                    }, 300);
+                } else {
+                    popup.show();
+                    setTimeout(function () {
+                        popup.addClass("active");
+                    }, 10);
+                }
+            });
+
+            $(document).on("click", "#popup-close", function () {
+                popup.removeClass("active");
+                setTimeout(function () {
+                    popup.hide();
+                }, 300);
+            });
+        });
+        $(document).on("click", ".delete-button", function () {
+            var notificationDiv = $(this).closest(".notification");
+            var notificationId = notificationDiv.data("notificationid");
+
+            $.post('/Notifications/DeleteNotificationUser', { notificationId: notificationId }, function (result) {
+                if (result.success) {
+                    // Remove the deleted notification div from the popup
+                    notificationDiv.remove();
+                } else {
+                    console.error("Error deleting NotificationUser: " + result.message);
+                }
+            });
+        });
+    });
+
+
+    function renderNotificationPurchaseOrder(notification) {
+
+        var html = "<div class='notification' data-notificationid='" + notification.NotificationID + "'> Notification: " + notification.Message;
+    html += notification.Username;
+    html += " At " + notification.DateTime;
+
+        var url = '@Url.Action("PurchaseDetailsModifier", "Home", new { OrderNum = "__ORDER_NUM__" })';
+    url = url.replace("__ORDER_NUM__", notification.ActionID);
+    html += '<a class="details-button" href="' + url + '">Details</a>';
+
+    //html += '<button class="delete-button" data-notificationid="' + notification.NotificationID + '">Delete</button>';
+        html += '<span class="delete-button" data-notificationid="' + notification.NotificationID + '"><i class="fas fa-trash"></i></span>';
+
+    html += "</div>";
+    return html;
+    }
+    function renderNotificationReceipt(notification) {
+
+        var html = "<div class='notification' data-notificationid='" + notification.NotificationID + "'> Notification: " + notification.Message;
+    html += notification.Username;
+    html += " At " + notification.DateTime;
+
+        var url = '@Url.Action("ReceiptDetailsModifier", "Home", new { ReceiptID = "__ORDER_NUM__" })';
+    url = url.replace("__ORDER_NUM__", notification.ActionID);
+    html += '<a class="details-button" href="' + url + '">Details</a>';
+
+    //html += '<button class="delete-button" data-notificationid="' + notification.NotificationID + '">Delete</button>';
+        html += '<span class="delete-button" data-notificationid="' + notification.NotificationID + '"><i class="fas fa-trash"></i></span>';
+
+    html += "</div>";
+    return html;
+    }
+    function renderNotificationInvoice(notification) {
+
+        var html = "<div class='notification' data-notificationid='" + notification.NotificationID + "'> Notification: " + notification.Message;
+    html += notification.Username;
+    html += " At " + notification.DateTime;
+
+        var url = '@Url.Action("InvoiceDetailsModifier", "Home", new { InvoiceID = "__ORDER_NUM__" })';
+    url = url.replace("__ORDER_NUM__", notification.ActionID);
+    html += '<a class="details-button" href="' + url + '">Details</a>';
+
+    //html += '<button class="delete-button" data-notificationid="' + notification.NotificationID + '">Delete</button>';
+        html += '<span class="delete-button" data-notificationid="' + notification.NotificationID + '"><i class="fas fa-trash"></i></span>';
+
+    html += "</div>";
+    return html;
+    }
+    function renderNotificationProduct(notification) {
+
+        var html = "<div class='notification' data-notificationid='" + notification.NotificationID + "'> Notification: " + notification.Message;
+    html += notification.Username;
+    html += " At " + notification.DateTime;
+
+    var url = '@Url.Action("ProductDetails", "Home", new { productId = "__ORDER_NUM__" })';
+    url = url.replace("__ORDER_NUM__", notification.ActionID);
+    html += '<a class="details-button" href="' + url + '">Details</a>';
+
+    //html += '<button class="delete-button" data-notificationid="' + notification.NotificationID + '">Delete</button>';
+        html += '<span class="delete-button" data-notificationid="' + notification.NotificationID + '"><i class="fas fa-trash"></i></span>';
+
+    html += "</div>";
+    return html;
+    }
+
+    function renderNotificationProductOutStock(notification) {
+
+        var html = "<div class='notification' data-notificationid='" + notification.NotificationID + "'> Notification: " + notification.Message;
+    html += " At " + notification.DateTime;
+
+    var url = '@Url.Action("ProductDetails", "Home", new { productId = "__ORDER_NUM__" })';
+    url = url.replace("__ORDER_NUM__", notification.ActionID);
+    html += '<a class="details-button" href="' + url + '">Details</a>';
+
+        html += '<span class="delete-button" data-notificationid="' + notification.NotificationID + '"><i class="fas fa-trash"></i></span>';
+
+    html += "</div>";
+    return html;
+    }
+
+    $(document).on("click", ".delete-button", function () {
+        var notificationId = $(this).data("notificationid");
+        var notificationDiv = $('.notification[data-notificationid="' + notificationId + '"]');
+
+        // Send AJAX request to delete the NotificationUser
+        $.post('/Notifications/DeleteNotificationUser', { notificationId: notificationId }, function (result) {
+            if (result.success) {
+                // Remove the deleted notification div from the DOM
+                notificationDiv.remove();
+            } else {
+                console.error("Error deleting NotificationUser: " + result.message);
+            }
+        });
+    });
+</script>
+
+    ---->
+<div style="float:right">
+    <div class="table-buttons">
+        <!-- Button to change between DataTable and Div view -->
+        <button class="btn btn-primary view-btn" id="changeViewBtn">User Friendly</button>
+    </div>
+</div>

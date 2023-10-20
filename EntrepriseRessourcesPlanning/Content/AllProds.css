@@ -1,0 +1,135 @@
+﻿body {
+    font-family: Arial, sans-serif;
+    background-color: #f0f0f0;
+}
+
+.product-image {
+    width: 200px; /* Set the desired width for all images */
+    height: 200px; /* Set the desired height for all images */
+    object-fit: cover; /* Ensures the image retains its aspect ratio while covering the container */
+}
+
+.highlight {
+    background-color: #DAA520;
+}
+
+
+/* Search container styling */
+.search-container {
+    margin-bottom: 20px;
+}
+
+    .search-container input[type="text"] {
+        width: 100%;
+        padding: 10px;
+        font-size: 16px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+    }
+
+/* Sort container styling */
+.sort-container {
+    display: inline-block;
+    background-color: #f9f9f9;
+    padding: 10px;
+    border-radius: 4px;
+}
+
+    .sort-container label {
+        font-size: 16px;
+        font-weight: bold;
+        margin-right: 10px;
+    }
+
+    .sort-container select {
+        font-size: 16px;
+        padding: 6px 10px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+    }
+
+        .sort-container select option {
+            font-size: 16px;
+        }
+/*Filter by category Styling*/
+.filter-container {
+    margin-bottom: 20px;
+}
+
+    .filter-container label {
+        font-size: 16px;
+        font-weight: bold;
+        margin-right: 10px;
+    }
+
+    .filter-container select {
+        font-size: 16px;
+        padding: 6px 10px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+    }
+
+        .filter-container select option {
+            font-size: 16px;
+        }
+
+.product-container {
+    flex-basis: calc(33.33% - 20px);
+    margin: 10px;
+    padding: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    background-color: #fff;
+    text-align: center;
+    transition: transform 0.3s ease;
+    border-radius: 10px;
+}
+
+    .product-container:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+    }
+
+.product-images-container {
+    position: relative;
+    margin-top: 15px;
+}
+
+
+.old-price {
+    color: red;
+    text-decoration: line-through;
+}
+
+.new-price {
+    color: green;
+}
+
+
+/* Styling for the top page button */
+.top-page-button {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    background-color: #008080;
+    color: #fff;
+    border: none;
+    border-radius: 50%;
+    width: 60px;
+    height: 60px;
+    font-size: 24px;
+    line-height: 60px;
+    text-align: center;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    cursor: pointer;
+    transition: background-color 0.2s, transform 0.2s;
+}
+
+    .top-page-button:hover {
+        background-color: #006666;
+    }
+
+    .top-page-button i {
+        /* Use your preferred icon library (Font Awesome, Material Icons, etc.) */
+        /* For example, using Font Awesome: */
+        font-family: "Font Awesome 5 Free"; /* Make sure the font is available */
+    }

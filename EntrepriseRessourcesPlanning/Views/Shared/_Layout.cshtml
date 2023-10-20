@@ -1,0 +1,1120 @@
+﻿@using EntrepriseRessourcesPlanning.Models
+
+@{
+    var dbContext = new ContextDB(); // Instantiate your DbContext
+    var categories = dbContext.Categories.ToList();
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <!-- Meta tags -->
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+    <title>@ViewBag.Title ERP Application</title>
+
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    @Styles.Render("~/Content/css")
+    <link rel="stylesheet" href="~/Content/EditProd.css" />
+
+
+    <link rel="stylesheet" href="~/Content/Layout.css" />
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+
+    <!-- jQuery DataTables -->
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.2/css/jquery.dataTables.min.css" />
+    <script type="text/javascript" src="https://cdn.datatables.net/1.11.2/js/jquery.dataTables.min.js"></script>
+
+    @Scripts.Render("~/bundles/modernizr")
+    @Scripts.Render("~/bundles/bootstrap")
+
+
+    <script src="~/Scripts/LayoutJS.js"></script>
+
+</head>
+<body>
+
+
+    <link href='https://unpkg.com/boxicons@2.0.7/css/boxicons.min.css' rel='stylesheet'>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
+
+    <!----------------------Product Modal------------------------->
+    <!-- Modal to show Add Product form -->
+    <div class="modal fade" id="addProductModal" tabindex="-1" role="dialog" aria-labelledby="addProductModalLabel" aria-hidden="true">
+        <div class="modal-dialog custom-modal " role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 class="modal-title" id="addProductModalLabel">Add Product</h3>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body" id="addProductModalBody">
+                    <form action="@Url.Action("AddProductMethod", "Home")" method="post" class="signin-form" enctype="multipart/form-data" aria-hidden="true">
+
+                        <div>
+                            <label for="ProductID">ProductID</label>
+                            <input type="text" id="ProductID" name="ProductID" class="form-input" />
+                        </div>
+                        <div>
+                            <label for="Name">Name:</label>
+                            <input type="text" id="Name" name="Name" class="form-input" />
+                        </div>
+                        <div>
+                            <label for="Description">Description:</label>
+                            <textarea id="Description" name="Description" class="form-input"></textarea>
+                        </div>
+                        <div>
+                            <label for="Stock">Stock:</label>
+                            <input type="number" id="Stock" name="Stock" class="form-input" min="1" />
+                        </div>
+                        <div>
+                            <label for="UnitPrice">Unit Price:</label>
+                            <input type="number" id="UnitPrice" name="UnitPrice" step="0.01" class="form-input" min="0" />
+                        </div>
+                        <div>
+                            <label for="Category">Category:</label>
+                            <select name="selectedCategory" id="selectedCategory">
+                                <option value="">-- Select Category --</option>
+                                @foreach (var category in categories)
+                                {
+                                    <option value="@category.CategoryName">@category.CategoryName</option>
+                                }
+                            </select>
+                        </div>
+                        <label for="newCategory">New Category:</label>
+                        <input type="text" name="newCategory" id="newCategory" />
+
+                        <button type="button" onclick="addCategory()">Add Category</button>
+                        <div>
+                            <label for="Img">Photo:</label>
+                            <input type="file" name="photoFiles" accept="image/*" multiple>
+                        </div>
+                        <div>
+                            <input type="submit" value="Add Product" class="submit-btn" />
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--------------------------------------------------------------------->
+    @if (Session["UserCIN"] != null)
+    {
+        <nav>
+            <div class="navbar">
+                <i class='bx bx-menu'></i>
+                <div class="nav-links">
+                    <div class="sidebar-logo">
+                        <i class='bx bx-x'></i>
+                    </div>
+                    <ul class="links">
+                        <!-- Nav links based on user access -->
+                        @if (((List<string>)Session["Accesses"]).Contains("ConsultingProducts") || ((List<string>)Session["Accesses"]).Contains("AddingProducts"))
+                        {
+
+                            <li>
+                                <a href="#">Products</a>
+                                <i class='bx bxs-chevron-down htmlcss-arrow arrow  '></i>
+                                <ul class="htmlCss-sub-menu sub-menu">
+                                    @if (((List<string>)Session["Accesses"]).Contains("ConsultingProducts"))
+                                    {
+
+                                        <li>@Html.ActionLink("Consult Products", "AllProductsData", "Home")</li>
+                                    }
+                                    @if (((List<string>)Session["Accesses"]).Contains("AddingProducts"))
+                                    {
+
+                                        <li><a href="#" data-toggle="modal" data-target="#addProductModal">Add Product</a></li>
+                                    }
+                                    <!---<li class="more">
+                                        <span>
+                                            <a href="#">More</a>
+                                            <i class='bx bxs-chevron-right arrow more-arrow'></i>
+                                        </span>
+                                        <ul class="more-sub-menu sub-menu">
+                                            <li><a href="#">Neumorphism</a></li>
+                                            <li><a href="#">Pre-loader</a></li>
+                                            <li><a href="#">Glassmorphism</a></li>
+                                        </ul>
+                                    </li>
+                                        -->
+                                </ul>
+                            </li>
+                        }
+                        @if (((List<string>)Session["Accesses"]).Contains("ConsultingProviders") || ((List<string>)Session["Accesses"]).Contains("AddingProviders"))
+                        {
+
+                            <li>
+                                <a href="#">Providers</a>
+                                <i class='bx bxs-chevron-down htmlcss-arrow arrow  '></i>
+                                <ul class="htmlCss-sub-menu sub-menu">
+                                    @if (((List<string>)Session["Accesses"]).Contains("ConsultingProviders"))
+                                    {
+
+                                        <li>@Html.ActionLink("Consult Providers", "ProvidersList", "Home")</li>
+                                    }
+                                    @if (((List<string>)Session["Accesses"]).Contains("AddingProviders"))
+                                    {
+
+                                        <li>@Html.ActionLink("Add Provider", "AddProvider", "Home")</li>
+                                    }
+                                    <!---<li class="more">
+                                        <span>
+                                            <a href="#">More</a>
+                                            <i class='bx bxs-chevron-right arrow more-arrow'></i>
+                                        </span>
+                                        <ul class="more-sub-menu sub-menu">
+                                            <li><a href="#">Neumorphism</a></li>
+                                            <li><a href="#">Pre-loader</a></li>
+                                            <li><a href="#">Glassmorphism</a></li>
+                                        </ul>
+                                    </li>
+                                        -->
+                                </ul>
+                            </li>
+                        }
+                        @if (((List<string>)Session["Accesses"]).Contains("AddingUsers") || ((List<string>)Session["Accesses"]).Contains("ConsultingUsers"))
+                        {
+
+                            <li>
+                                <a href="#">Users</a>
+                                <i class='bx bxs-chevron-down htmlcss-arrow arrow  '></i>
+                                <ul class="htmlCss-sub-menu sub-menu">
+                                    @if (((List<string>)Session["Accesses"]).Contains("AddingUsers"))
+                                    {
+
+                                        <li>@Html.ActionLink("Consult Users", "UsersList", "Home")</li>
+                                    }
+                                    @if (((List<string>)Session["Accesses"]).Contains("AddingUsers"))
+                                    {
+
+                                        <li>@Html.ActionLink("Add User", "AddUser", "Home")</li>
+                                    }
+                                    <!---<li class="more">
+                                        <span>
+                                            <a href="#">More</a>
+                                            <i class='bx bxs-chevron-right arrow more-arrow'></i>
+                                        </span>
+                                        <ul class="more-sub-menu sub-menu">
+                                            <li><a href="#">Neumorphism</a></li>
+                                            <li><a href="#">Pre-loader</a></li>
+                                            <li><a href="#">Glassmorphism</a></li>
+                                        </ul>
+                                    </li>
+                                        -->
+                                </ul>
+                            </li>
+                        }
+                        @if (((List<string>)Session["Accesses"]).Contains("AddingPurchaseOrder"))
+                        {
+
+                            <li>
+                                <a href="#">Purchase Orders</a>
+                                <i class='bx bxs-chevron-down htmlcss-arrow arrow  '></i>
+                                <ul class="htmlCss-sub-menu sub-menu">
+                                    @if (((List<string>)Session["Accesses"]).Contains("AddingPurchaseOrder"))
+                                    {
+
+                                        <li>@Html.ActionLink("Consult Purchases", "AllPurchaseOrders", "Home")</li>
+                                    }
+                                    @if (((List<string>)Session["Accesses"]).Contains("AddingPurchaseOrder"))
+                                    {
+
+                                        <li>@Html.ActionLink("Add Purchase", "AddPurchaseOrder", "Home")</li>
+                                    }
+                                    <!---<li class="more">
+                                        <span>
+                                            <a href="#">More</a>
+                                            <i class='bx bxs-chevron-right arrow more-arrow'></i>
+                                        </span>
+                                        <ul class="more-sub-menu sub-menu">
+                                            <li><a href="#">Neumorphism</a></li>
+                                            <li><a href="#">Pre-loader</a></li>
+                                            <li><a href="#">Glassmorphism</a></li>
+                                        </ul>
+                                    </li>
+                                        -->
+                                </ul>
+                            </li>
+                        }
+                        @if (((List<string>)Session["Accesses"]).Contains("AddingReceipt"))
+                        {
+
+                            <li>
+                                <a href="#">Receipts</a>
+                                <i class='bx bxs-chevron-down htmlcss-arrow arrow  '></i>
+                                <ul class="htmlCss-sub-menu sub-menu">
+                                    @if (((List<string>)Session["Accesses"]).Contains("AddingReceipt"))
+                                    {
+
+                                        <li>@Html.ActionLink("Consult Receipts", "AllReceipts", "Home")</li>
+                                    }
+                                    @if (((List<string>)Session["Accesses"]).Contains("AddingReceipt"))
+                                    {
+
+                                        <li>@Html.ActionLink("Add Receipt", "AddReceipt", "Home")</li>
+                                    }
+                                    <!---<li class="more">
+                                        <span>
+                                            <a href="#">More</a>
+                                            <i class='bx bxs-chevron-right arrow more-arrow'></i>
+                                        </span>
+                                        <ul class="more-sub-menu sub-menu">
+                                            <li><a href="#">Neumorphism</a></li>
+                                            <li><a href="#">Pre-loader</a></li>
+                                            <li><a href="#">Glassmorphism</a></li>
+                                        </ul>
+                                    </li>
+                                        -->
+                                </ul>
+                            </li>
+                        }
+                        @if (((List<string>)Session["Accesses"]).Contains("AddingInvoice"))
+                        {
+
+                            <li>
+                                <a href="#">Invoices</a>
+                                <i class='bx bxs-chevron-down htmlcss-arrow arrow  '></i>
+                                <ul class="htmlCss-sub-menu sub-menu">
+                                    @if (((List<string>)Session["Accesses"]).Contains("AddingInvoice"))
+                                    {
+
+                                        <li>@Html.ActionLink("Consult Invoices", "AllInvoices", "Home")</li>
+                                    }
+                                    @if (((List<string>)Session["Accesses"]).Contains("AddingInvoice"))
+                                    {
+
+                                        <li>@Html.ActionLink("Add Invoice", "AddInvoice", "Home")</li>
+                                    }
+                                    <!---<li class="more">
+                                        <span>
+                                            <a href="#">More</a>
+                                            <i class='bx bxs-chevron-right arrow more-arrow'></i>
+                                        </span>
+                                        <ul class="more-sub-menu sub-menu">
+                                            <li><a href="#">Neumorphism</a></li>
+                                            <li><a href="#">Pre-loader</a></li>
+                                            <li><a href="#">Glassmorphism</a></li>
+                                        </ul>
+                                    </li>
+                                        -->
+                                </ul>
+                            </li>
+                        }
+                    </ul>
+                </div>
+                <div class="search-box">
+                    <i class='bx bx-search'></i>
+                    <div class="input-box">
+                        <input type="text" id="searchInput" placeholder="Search by product name..." oninput="searchProducts()">
+                    </div>
+                </div>
+                <ul class="navbar-nav navbar-right" style="    list-style: none;
+">
+                    <li>
+
+                        <a href="@Url.Action("SignOut", "Account")" style="text-decoration:none; color:white">
+                            Sign Out  <i class="fa fa-sign-out-alt"></i>
+                        </a>
+                    </li>
+                </ul>
+                <button id="notificationsIcon" type="button" class="icon-button">
+                    <span class="material-icons">notifications</span>
+                    <span class="icon-button__badge">0</span>
+                </button>
+            </div>
+        </nav>
+
+    }
+    <div id="popup" class="popup">
+        <button id="popup-close">X</button>
+        <div id="popup-content" class="popup-content"></div>
+    </div>
+    <script src="script.js"></script>
+
+    <style>
+        /* Googlefont Poppins CDN Link */
+        @@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@200;300;400;500;600;700&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+        }
+
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            height: 70px;
+            background: #3E8DA8;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+            z-index: 99;
+        }
+
+            nav .navbar {
+                height: 100%;
+                max-width: 1250px;
+                width: 100%;
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                margin: auto;
+                /* background: red; */
+                padding: 0 50px;
+            }
+
+        .navbar .logo a {
+            font-size: 30px;
+            color: #fff;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        nav .navbar .nav-links {
+            line-height: 70px;
+            height: 100%;
+        }
+
+        nav .navbar .links {
+            display: flex;
+        }
+
+            nav .navbar .links li {
+                position: relative;
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                list-style: none;
+                padding: 0 14px;
+            }
+
+                nav .navbar .links li a {
+                    height: 100%;
+                    text-decoration: none;
+                    white-space: nowrap;
+                    color: #fff;
+                    font-size: 15px;
+                    font-weight: 500;
+                }
+
+        .links li:hover .htmlcss-arrow,
+        .links li:hover .js-arrow {
+            transform: rotate(180deg);
+        }
+
+        nav .navbar .links li .arrow {
+            /* background: red; */
+            height: 100%;
+            width: 22px;
+            line-height: 70px;
+            text-align: center;
+            display: inline-block;
+            color: #fff;
+            transition: all 0.3s ease;
+        }
+
+        nav .navbar .links li .sub-menu {
+            position: absolute;
+            top: 70px;
+            left: 0;
+            line-height: 40px;
+            background: #3E8DA8;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+            border-radius: 0 0 4px 4px;
+            display: none;
+            z-index: 2;
+        }
+
+        nav .navbar .links li:hover .htmlCss-sub-menu,
+        nav .navbar .links li:hover .js-sub-menu {
+            display: block;
+        }
+
+        .navbar .links li .sub-menu li {
+            padding: 0 22px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .navbar .links li .sub-menu a {
+            color: #fff;
+            font-size: 15px;
+            font-weight: 500;
+        }
+
+        .navbar .links li .sub-menu .more-arrow {
+            line-height: 40px;
+        }
+
+        .navbar .links li .htmlCss-more-sub-menu {
+            /* line-height: 40px; */
+        }
+
+        .navbar .links li .sub-menu .more-sub-menu {
+            position: absolute;
+            top: 0;
+            left: 100%;
+            border-radius: 0 4px 4px 4px;
+            z-index: 1;
+            display: none;
+        }
+
+        .links li .sub-menu .more:hover .more-sub-menu {
+            display: block;
+        }
+
+        .navbar .search-box {
+            position: relative;
+            height: 40px;
+            width: 40px;
+        }
+
+            .navbar .search-box i {
+                position: absolute;
+                height: 100%;
+                width: 100%;
+                line-height: 40px;
+                text-align: center;
+                font-size: 22px;
+                color: #fff;
+                font-weight: 600;
+                cursor: pointer;
+                transition: all 0.3s ease;
+            }
+
+            .navbar .search-box .input-box {
+                position: absolute;
+                right: calc(100% - 40px);
+                top: 80px;
+                height: 60px;
+                width: 300px;
+                background: #3E8DA8;
+                border-radius: 6px;
+                opacity: 0;
+                pointer-events: none;
+                transition: all 0.4s ease;
+            }
+
+        .navbar.showInput .search-box .input-box {
+            top: 65px;
+            opacity: 1;
+            pointer-events: auto;
+            background: #3E8DA8;
+        }
+
+        .search-box .input-box::before {
+            content: '';
+            position: absolute;
+            height: 20px;
+            width: 20px;
+            background: #3E8DA8;
+            right: 10px;
+            top: -6px;
+            transform: rotate(45deg);
+        }
+
+        .search-box .input-box input {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            border-radius: 4px;
+            transform: translate(-50%, -50%);
+            height: 35px;
+            width: 280px;
+            outline: none;
+            padding: 0 15px;
+            font-size: 16px;
+            border: none;
+        }
+
+        .navbar .nav-links .sidebar-logo {
+            display: none;
+        }
+
+        .navbar .bx-menu {
+            display: none;
+        }
+
+        @@media (max-width:920px) {
+            nav .navbar {
+                max-width: 100%;
+                padding: 0 25px;
+            }
+
+                nav .navbar .logo a {
+                    font-size: 27px;
+                }
+
+                nav .navbar .links li {
+                    padding: 0 10px;
+                    white-space: nowrap;
+                }
+
+                    nav .navbar .links li a {
+                        font-size: 15px;
+                    }
+        }
+
+        @@media (max-width:800px) {
+            nav {
+                /* position: relative; */
+            }
+
+            .navbar .bx-menu {
+                display: block;
+            }
+
+            nav .navbar .nav-links {
+                position: fixed;
+                top: 0;
+                left: -100%;
+                display: block;
+                max-width: 270px;
+                width: 100%;
+                background: #3E8DA8;
+                line-height: 40px;
+                padding: 20px;
+                box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+                transition: all 0.5s ease;
+                z-index: 1000;
+            }
+
+            .navbar .nav-links .sidebar-logo {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+            }
+
+            .sidebar-logo .logo-name {
+                font-size: 25px;
+                color: #fff;
+            }
+
+            .sidebar-logo i,
+            .navbar .bx-menu {
+                font-size: 25px;
+                color: #fff;
+            }
+
+            nav .navbar .links {
+                display: block;
+                margin-top: 20px;
+            }
+
+                nav .navbar .links li .arrow {
+                    line-height: 40px;
+                }
+
+                nav .navbar .links li {
+                    display: block;
+                }
+
+                    nav .navbar .links li .sub-menu {
+                        position: relative;
+                        top: 0;
+                        box-shadow: none;
+                        display: none;
+                    }
+
+                        nav .navbar .links li .sub-menu li {
+                            border-bottom: none;
+                        }
+
+            .navbar .links li .sub-menu .more-sub-menu {
+                display: none;
+                position: relative;
+                left: 0;
+            }
+
+                .navbar .links li .sub-menu .more-sub-menu li {
+                    display: flex;
+                    align-items: center;
+                    justify-content: space-between;
+                }
+
+            .links li:hover .htmlcss-arrow,
+            .links li:hover .js-arrow {
+                /*transform: rotate(0deg);*/
+            }
+
+            .navbar .links li .sub-menu .more-sub-menu {
+                display: none;
+            }
+
+            .navbar .links li .sub-menu .more span {
+                /* background: red; */
+                display: flex;
+                align-items: center;
+                /* justify-content: space-between; */
+            }
+
+            .links li .sub-menu .more:hover .more-sub-menu {
+                /*display: none;*/
+            }
+
+            nav .navbar .links li:hover .htmlCss-sub-menu,
+            nav .navbar .links li:hover .js-sub-menu {
+                /*display: none;*/
+            }
+
+            .navbar .nav-links.show1 .links .htmlCss-sub-menu,
+            .navbar .nav-links.show3 .links .js-sub-menu,
+            .navbar .nav-links.show2 .links .more .more-sub-menu {
+                display: block;
+            }
+
+            .navbar .nav-links.show1 .links .htmlcss-arrow,
+            .navbar .nav-links.show3 .links .js-arrow {
+                transform: rotate(180deg);
+            }
+
+            .navbar .nav-links.show2 .links .more-arrow {
+                transform: rotate(90deg);
+            }
+        }
+
+        @@media (max-width:370px) {
+            nav .navbar .nav-links {
+                max-width: 100%;
+            }
+        }
+    </style>
+    <script>
+        // search-box open close js code
+        let navbar = document.querySelector(".navbar");
+        let searchBox = document.querySelector(".search-box .bx-search");
+        // let searchBoxCancel = document.querySelector(".search-box .bx-x");
+
+        searchBox.addEventListener("click", () => {
+            navbar.classList.toggle("showInput");
+            if (navbar.classList.contains("showInput")) {
+                searchBox.classList.replace("bx-search", "bx-x");
+            } else {
+                searchBox.classList.replace("bx-x", "bx-search");
+            }
+        });
+
+        // sidebar open close js code
+        let navLinks = document.querySelector(".nav-links");
+        let menuOpenBtn = document.querySelector(".navbar .bx-menu");
+        let menuCloseBtn = document.querySelector(".nav-links .bx-x");
+        menuOpenBtn.onclick = function () {
+            navLinks.style.left = "0";
+        }
+        menuCloseBtn.onclick = function () {
+            navLinks.style.left = "-100%";
+        }
+
+
+        // sidebar submenu open close js code
+        let htmlcssArrow = document.querySelector(".htmlcss-arrow");
+        htmlcssArrow.onclick = function () {
+            navLinks.classList.toggle("show1");
+        }
+        let moreArrow = document.querySelector(".more-arrow");
+        moreArrow.onclick = function () {
+            navLinks.classList.toggle("show2");
+        }
+        let jsArrow = document.querySelector(".js-arrow");
+        jsArrow.onclick = function () {
+            navLinks.classList.toggle("show3");
+        }
+    </script>
+    <div class="container body-content">
+        @RenderBody()
+        <hr />
+        <footer>
+            <p>&copy; @DateTime.Now.Year - Developed by BOUJELBEN MARWEN</p>
+        </footer>
+    </div>
+
+    <!-- Scripts -->
+    @RenderSection("scripts", required: false)
+</body>
+</html>
+
+<style>
+
+
+    .icon-button {
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 50px;
+        height: 50px;
+        border: none;
+        outline: none;
+        border-radius: 50%;
+        background-color: #3E8DA8;
+    }
+
+        .icon-button:hover {
+            cursor: pointer;
+            background-color: white;
+        }
+
+        .icon-button:active {
+            background-color: white;
+        }
+
+    .icon-button__badge {
+        position: absolute;
+        top: -1px;
+        right: -2px;
+        width: 25px;
+        height: 25px;
+        background: red;
+        color: #ffffff;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        border-radius: 50%;
+    }
+</style>
+
+<script>
+    const notificationsIcon = document.getElementById('notificationsIcon');
+
+    function updateNotificationsCounter(count) {
+        const counterElement = notificationsIcon.querySelector('.icon-button__badge');
+        counterElement.innerText = count.toString();
+    }
+
+    function fetchNotifications() {
+        // Fetch notifications from the server using AJAX
+        fetch('/Notifications/CountNotifications', { method: 'GET' })
+            .then(response => response.json())
+            .then(data => {
+                // Update the notifications counter
+                updateNotificationsCounter(data);
+            })
+            .catch(error => {
+                console.error('Error fetching notifications:', error);
+            });
+    }
+    setInterval(fetchNotifications, 3000);
+
+    function checkProductsStock() {
+        $.get('/Notifications/CheckStock')
+            .done(function (data) {
+                console.log('Products checked successfully.');
+            })
+            .fail(function (xhr, textStatus, error) {
+                console.error('Error checking products stock:', error);
+            });
+    }
+
+    // Call the function every 3 seconds (3000 milliseconds)
+    setInterval(checkProductsStock, 3000);
+</script>
+
+
+
+
+
+
+
+<!--------------------------------PopUP-------------------------------------->
+
+<style>
+    .popup {
+        position: fixed;
+        top: 80px;
+        right: 80px;
+        width: 500px;
+        padding: 10px;
+        background-color: white;
+        border: 1px solid #ccc;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        opacity: 0;
+        transform: translateY(-20px); /* Initial translation to create a smooth entrance effect */
+        transition: opacity 0.3s, transform 0.3s;
+        z-index: 1000;
+        height: 120px;
+        overflow: scroll;
+        overflow-x: hidden;
+    }
+
+        .popup #popup-close {
+            position: absolute;
+            top: 0px; /* Adjust to match your design */
+            right: 0px; /* Adjust to move the button to the right */
+            background: border-box;
+            border: none;
+            cursor: pointer;
+            font-size: 18px;
+            color: #999;
+            transition: color 0.3s;
+        }
+
+            .popup #popup-close:hover {
+                color: red; /* Change to your desired hover color */
+            }
+
+        .popup.active {
+            opacity: 1;
+            transform: translateY(0); /* Reset the translation for smooth entrance effect */
+        }
+
+        .popup .popup-content {
+            border-top: 1px solid #ccc;
+            padding-top: 10px;
+        }
+
+
+    .notification {
+        padding: 10px;
+        border-bottom: 1px solid #ccc;
+        cursor: pointer;
+        transition: background-color 0.3s;
+    }
+
+        .notification:hover {
+            background-color: #f5f5f5;
+        }
+
+        .notification a.details-button {
+            display: inline-block;
+            margin-top: 5px;
+            padding: 5px 10px;
+            background-color: #007bff;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            margin-left: 20px;
+        }
+
+        .notification .delete-button:hover i {
+            color: red;
+        }
+
+        .notification .delete-button {
+            float: right;
+            border: none;
+            background-color: transparent;
+            cursor: pointer;
+            color: #777;
+            font-size: 14px;
+        }
+</style>
+<script>
+    $(document).ready(function () {
+        var popup = $('#popup');
+        var popupContent = $('#popup-content');
+        popup.removeClass("active");
+        setTimeout(function () {
+            popup.hide();
+        }, 300);
+        $(".icon-button").click(function () {
+            console.log("hello");
+            $.get('/Notifications/GetNotifications', function (notifications) {
+                popupContent.empty(); // Clear previous popup content
+
+                notifications.forEach(function (notification) {
+                    console.log(notification);
+                    //$('#notification-container').append(renderNotification(notification));
+                    if (notification.NotificationAction == "Add Purchase Order") {
+                        popupContent.append(renderNotificationPurchaseOrder(notification));
+                    }
+                    else if (notification.NotificationAction == "Add Receipt") {
+                        popupContent.append(renderNotificationReceipt(notification));
+
+                    }
+                    else if (notification.NotificationAction == "Add Invoice") {
+                        popupContent.append(renderNotificationInvoice(notification));
+
+                    }
+                    else if (notification.NotificationAction == "Add Product") {
+                        popupContent.append(renderNotificationProduct(notification));
+
+                    }
+                    else if (notification.NotificationAction == "Update Product") {
+                        popupContent.append(renderNotificationProduct(notification));
+
+                    }
+                    else if (notification.NotificationAction == "Out of Stock") {
+                        popupContent.append(renderNotificationProductOutStock(notification));
+
+                    }
+
+                });
+
+                if (popup.hasClass("active")) {
+                    popup.removeClass("active");
+                    setTimeout(function () {
+                        popup.hide();
+                    }, 300);
+                } else {
+                    popup.show();
+                    setTimeout(function () {
+                        popup.addClass("active");
+                    }, 10);
+                }
+            });
+
+            $(document).on("click", "#popup-close", function () {
+                popup.removeClass("active");
+                setTimeout(function () {
+                    popup.hide();
+                }, 300);
+            });
+        });
+        $(document).on("click", ".delete-button", function () {
+            var notificationDiv = $(this).closest(".notification");
+            var notificationId = notificationDiv.data("notificationid");
+
+            $.post('/Notifications/DeleteNotificationUser', { notificationId: notificationId }, function (result) {
+                if (result.success) {
+                    // Remove the deleted notification div from the popup
+                    notificationDiv.remove();
+                } else {
+                    console.error("Error deleting NotificationUser: " + result.message);
+                }
+            });
+        });
+    });
+
+
+    function renderNotificationPurchaseOrder(notification) {
+
+        var html = "<div class='notification' data-notificationid='" + notification.NotificationID + "'> Notification: " + notification.Message;
+    html += notification.Username;
+    html += " At " + notification.DateTime;
+
+        var url = '@Url.Action("PurchaseDetailsModifier", "Home", new { OrderNum = "__ORDER_NUM__" })';
+    url = url.replace("__ORDER_NUM__", notification.ActionID);
+    html += '<a class="details-button" href="' + url + '">Details</a>';
+
+    //html += '<button class="delete-button" data-notificationid="' + notification.NotificationID + '">Delete</button>';
+        html += '<span class="delete-button" data-notificationid="' + notification.NotificationID + '"><i class="fas fa-trash"></i></span>';
+
+    html += "</div>";
+    return html;
+    }
+    function renderNotificationReceipt(notification) {
+
+        var html = "<div class='notification' data-notificationid='" + notification.NotificationID + "'> Notification: " + notification.Message;
+    html += notification.Username;
+    html += " At " + notification.DateTime;
+
+        var url = '@Url.Action("ReceiptDetailsModifier", "Home", new { ReceiptID = "__ORDER_NUM__" })';
+    url = url.replace("__ORDER_NUM__", notification.ActionID);
+    html += '<a class="details-button" href="' + url + '">Details</a>';
+
+    //html += '<button class="delete-button" data-notificationid="' + notification.NotificationID + '">Delete</button>';
+        html += '<span class="delete-button" data-notificationid="' + notification.NotificationID + '"><i class="fas fa-trash"></i></span>';
+
+    html += "</div>";
+    return html;
+    }
+    function renderNotificationInvoice(notification) {
+
+        var html = "<div class='notification' data-notificationid='" + notification.NotificationID + "'> Notification: " + notification.Message;
+    html += notification.Username;
+    html += " At " + notification.DateTime;
+
+        var url = '@Url.Action("InvoiceDetailsModifier", "Home", new { InvoiceID = "__ORDER_NUM__" })';
+    url = url.replace("__ORDER_NUM__", notification.ActionID);
+    html += '<a class="details-button" href="' + url + '">Details</a>';
+
+    //html += '<button class="delete-button" data-notificationid="' + notification.NotificationID + '">Delete</button>';
+        html += '<span class="delete-button" data-notificationid="' + notification.NotificationID + '"><i class="fas fa-trash"></i></span>';
+
+    html += "</div>";
+    return html;
+    }
+    function renderNotificationProduct(notification) {
+
+        var html = "<div class='notification' data-notificationid='" + notification.NotificationID + "'> Notification: " + notification.Message;
+    html += notification.Username;
+    html += " At " + notification.DateTime;
+
+    var url = '@Url.Action("ProductDetails", "Home", new { productId = "__ORDER_NUM__" })';
+    url = url.replace("__ORDER_NUM__", notification.ActionID);
+    html += '<a class="details-button" href="' + url + '">Details</a>';
+
+    //html += '<button class="delete-button" data-notificationid="' + notification.NotificationID + '">Delete</button>';
+        html += '<span class="delete-button" data-notificationid="' + notification.NotificationID + '"><i class="fas fa-trash"></i></span>';
+
+    html += "</div>";
+    return html;
+    }
+
+    function renderNotificationProductOutStock(notification) {
+
+        var html = "<div class='notification' data-notificationid='" + notification.NotificationID + "'> Notification: " + notification.Message;
+    html += " At " + notification.DateTime;
+
+    var url = '@Url.Action("ProductDetails", "Home", new { productId = "__ORDER_NUM__" })';
+    url = url.replace("__ORDER_NUM__", notification.ActionID);
+    html += '<a class="details-button" href="' + url + '">Details</a>';
+
+        html += '<span class="delete-button" data-notificationid="' + notification.NotificationID + '"><i class="fas fa-trash"></i></span>';
+
+    html += "</div>";
+    return html;
+    }
+
+    $(document).on("click", ".delete-button", function () {
+        var notificationId = $(this).data("notificationid");
+        var notificationDiv = $('.notification[data-notificationid="' + notificationId + '"]');
+
+        // Send AJAX request to delete the NotificationUser
+        $.post('/Notifications/DeleteNotificationUser', { notificationId: notificationId }, function (result) {
+            if (result.success) {
+                // Remove the deleted notification div from the DOM
+                notificationDiv.remove();
+            } else {
+                console.error("Error deleting NotificationUser: " + result.message);
+            }
+        });
+    });
+</script>
+
+
+
+
+
+
+<script>
+    function addCategory() {
+        var selectedCategoryDropdown = document.getElementById("selectedCategory");
+        var newCategoryInput = document.getElementById("newCategory");
+        console.log("hello");
+        var newCategoryValue = newCategoryInput.value;
+
+        if (newCategoryValue.trim() !== "") {
+            // Perform any required logic to add the new category
+            // For example, you can send an AJAX request to the server to save the new category
+            console.log("New category added:", newCategoryValue);
+
+            // Optionally, you can update the dropdown with the new category
+            var html = '<option value="' + newCategoryValue + '">' + newCategoryValue + '</option>';
+            console.log(html);
+            // Append the new option to the select dropdown
+            selectedCategoryDropdown.innerHTML+=html;
+
+            // Clear the input field
+            newCategoryInput.value = "";
+
+        }
+    }
+</script>
